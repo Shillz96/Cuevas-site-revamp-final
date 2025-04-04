@@ -108,5 +108,7 @@
     </section>
     <?php endif; ?>
 
-    <div id="content" class="site-content">
-        <div class="<?php echo (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) ? 'shop-container' : 'container'; ?>"> 
+    <div id="content" class="site-content full-width-content">
+        <?php if (!is_front_page()): ?>
+            <div class="<?php echo (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) ? 'shop-container container' : 'container'; ?>">
+        <?php endif; ?> 

@@ -6,7 +6,9 @@
  */
 
 ?>
-        </div><!-- .container or .shop-container -->
+        <?php if (!is_front_page()): ?>
+            </div><!-- .container or .shop-container -->
+        <?php endif; ?>
     </div><!-- #content -->
 
     <footer class="site-footer">

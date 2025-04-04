@@ -83,6 +83,10 @@ body {
     color: var(--secondary);
     background-color: var(--white);
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100vw !important;
+    max-width: 100% !important;
 }
 
 img {
@@ -122,9 +126,10 @@ button, input, select, textarea {
 
 /* Utility Classes */
 .container {
-    max-width: var(--container-width);
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 var(--spacing-md);
+    padding: 0 2rem;
 }
 
 .section {
@@ -754,4 +759,45 @@ footer {
     .page-title {
         font-size: 2rem;
     }
+}
+
+/* Global Layout Styles */
+#page {
+    width: 100vw !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.site-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.content-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.site-main {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Container Full Width */
+.container-fluid {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+}
+
+/* Hero Section - Ensure full visibility */
+.hero-section {
+    width: 100%;
+    max-width: 100%;
 } 
