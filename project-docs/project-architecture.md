@@ -1,98 +1,157 @@
-# Cuevas Western Wear Website Revamp - Project Architecture
+# Project Architecture
 
-## Project Overview
-This project involves cloning and revamping the [Cuevas Western Wear](https://cuevaswesternwear.com/) website, transforming it into a modern, efficient WordPress-based eCommerce store using Elementor and GSAP animations.
+## Overview
 
-## Project Goals
-1. Create a visually appealing, modern western wear store
-2. Improve user experience and navigation
-3. Optimize for mobile devices
-4. Increase conversion rates and sales
-5. Implement efficient product categorization and search
+This project involves a complete rebuild of the Cuevas Western Wear website using WordPress. The architecture is designed to support a high-performance eCommerce platform with custom theme development, WooCommerce integration, and modern frontend features.
 
-## Technical Stack
-- **CMS**: WordPress 6.7.2
-- **Page Builder**: Elementor Pro
-- **eCommerce**: WooCommerce
-- **Animations**: GSAP (GreenSock Animation Platform)
-- **Performance**: Optimized images, caching, and code minification
-- **Server Environment**: Local development with Local by Flywheel
+## System Architecture
 
-## Site Structure
-1. **Homepage**
-   - Hero section with featured products
-   - Category showcases
-   - Promotional sections
-   - Featured collections
-   - Testimonials
-   - Newsletter signup
+### WordPress Core
 
-2. **Shop Pages**
-   - Category pages (Men's, Women's, Accessories, etc.)
-   - Product listing pages
-   - Product detail pages
-   - Quick view functionality
+1. **Installation Structure**
+   - WordPress core files in `app/public`
+   - Configuration in `conf/`
+   - Logs in `logs/`
+   - Development environment using Local by Flywheel
 
-3. **Content Pages**
-   - About Us
-   - Contact
-   - Size Guide
-   - FAQ
-   - Blog/Style Guide
+2. **Database**
+   - MySQL database managed by Local by Flywheel
+   - Custom tables for WooCommerce
+   - Optimized queries and indexes
 
-4. **Functionality**
-   - User account management
-   - Shopping cart and checkout
-   - Wishlist
-   - Product filters and search
-   - Related products
+### Plugin Architecture
 
-## Design Elements
-- Western-themed color palette (earth tones, leather colors)
-- Typography mixing rustic and modern fonts
-- Custom icons and graphics reflecting western aesthetic
-- GSAP animations for product showcases and transitions
-- High-quality product imagery with zoom capabilities
+1. **Essential Plugins**
+   - WooCommerce for eCommerce functionality
+   - Elementor Pro for page building
+   - Optimization plugins for performance
+   - Security plugins for protection
 
-## Development Approach
-1. **Setup Phase**
-   - Install and configure WordPress
-   - Install Elementor Pro and WooCommerce
-   - Install GSAP integration plugin
-   - Create child theme for customizations
+2. **Plugin Integration**
+   - Minimal plugin dependencies
+   - Custom functionality over plugins where possible
+   - Performance-focused plugin selection
 
-2. **Design Phase**
-   - Create design system (colors, typography, components)
-   - Design homepage and key templates
-   - Build reusable Elementor blocks
-   - Implement responsive layouts
+### Theme Architecture
 
-3. **Development Phase**
-   - Build custom Elementor widgets if needed
-   - Implement GSAP animations
-   - Configure WooCommerce settings and templates
-   - Optimize for performance
+1. **Custom Theme**
+   - Located in `wp-content/themes/cuevas-theme`
+   - Modern WordPress development practices
+   - Mobile-first responsive design
+   - Custom WooCommerce integration
 
-4. **Testing Phase**
-   - Cross-browser testing
-   - Mobile responsiveness testing
-   - WooCommerce functionality testing
-   - Performance optimization
+2. **Frontend Development**
+   - GSAP for animations
+   - Modern CSS practices
+   - JavaScript optimization
+   - Asset management
 
-## Project Timeline
-- **Phase 1 (Setup)**: 1 week
-- **Phase 2 (Design)**: 2 weeks
-- **Phase 3 (Development)**: 3 weeks
-- **Phase 4 (Testing & Refinement)**: 1 week
+## eCommerce Implementation
 
-## Performance Goals
-- Google PageSpeed score > 85
-- Mobile-first responsive design
-- < 2 second initial load time
-- Optimized WooCommerce product pages
+### WooCommerce Setup
 
-## SEO Considerations
-- SEO-friendly URL structure
-- Product schema markup
-- Optimized image alt texts
-- Category and product meta descriptions 
+1. **Product Management**
+   - Custom product types
+   - Advanced categorization
+   - Inventory tracking
+   - Price management
+
+2. **Shopping Experience**
+   - Enhanced product displays
+   - Custom category pages
+   - Optimized checkout
+   - Cart modifications
+
+### Payment Processing
+
+1. **Payment Gateways**
+   - Secure payment processing
+   - Multiple payment options
+   - Order management
+   - Transaction logging
+
+## Performance Optimization
+
+### Server-side Optimization
+
+1. **Caching**
+   - Page caching
+   - Object caching
+   - Database query optimization
+   - CDN integration
+
+2. **Database**
+   - Query optimization
+   - Table structure
+   - Index management
+   - Regular maintenance
+
+### Frontend Optimization
+
+1. **Asset Management**
+   - CSS/JS minification
+   - Image optimization
+   - Lazy loading
+   - Critical CSS
+
+## Security Implementation
+
+### WordPress Security
+
+1. **Core Security**
+   - Regular updates
+   - Secure authentication
+   - File permissions
+   - SSL implementation
+
+2. **Custom Security**
+   - Custom login page
+   - Security headers
+   - Firewall rules
+   - Monitoring
+
+## Development Workflow
+
+### Version Control
+
+1. **Git Workflow**
+   - Feature branches
+   - Development branch
+   - Staging branch
+   - Production branch
+
+2. **Deployment**
+   - Local development
+   - Staging environment
+   - Production deployment
+   - Rollback procedures
+
+## Monitoring and Maintenance
+
+### Performance Monitoring
+
+1. **Metrics**
+   - Page load times
+   - Server response
+   - Database performance
+   - User experience
+
+2. **Analytics**
+   - User behavior
+   - Sales tracking
+   - Performance data
+   - Error logging
+
+### Maintenance Procedures
+
+1. **Regular Updates**
+   - WordPress core
+   - Plugins
+   - Theme
+   - Security patches
+
+2. **Backup Strategy**
+   - Database backups
+   - File backups
+   - Version control
+   - Recovery procedures 
