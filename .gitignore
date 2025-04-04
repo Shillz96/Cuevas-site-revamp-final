@@ -1,0 +1,32 @@
+# WordPress specific files
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/backups/
+
+# WordPress core
+wp-admin/
+wp-includes/
+
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Local by Flywheel specific
+conf/
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace 

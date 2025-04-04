@@ -1,0 +1,105 @@
+<!-- Western Style Guide Widget -->
+<section class="widget western-style-guide">
+  <div class="widget-header">
+    <h3 class="widget-title">Western Style Guide</h3>
+    <p class="widget-subtitle">Perfect your authentic western look with our style suggestions</p>
+  </div>
+  
+  <div class="style-guide-tabs">
+    <button class="tab-button active" data-tab="casual">Casual Western</button>
+    <button class="tab-button" data-tab="formal">Formal Western</button>
+    <button class="tab-button" data-tab="rodeo">Rodeo Ready</button>
+  </div>
+  
+  <div class="style-guide-content">
+    <!-- Casual Western Tab -->
+    <div class="tab-content active" id="casual">
+      <div class="style-outfit">
+        <div class="outfit-image">
+          <img src="assets/img/placeholder/style-casual.jpg" alt="Casual Western Outfit">
+        </div>
+        <div class="outfit-details">
+          <h4>Weekend Ranch Style</h4>
+          <ul class="outfit-items">
+            <li><span class="item-type">Hat:</span> <a href="#">Classic Felt Cowboy Hat</a></li>
+            <li><span class="item-type">Shirt:</span> <a href="#">Plaid Button-Up Shirt</a></li>
+            <li><span class="item-type">Jeans:</span> <a href="#">Relaxed Fit Denim</a></li>
+            <li><span class="item-type">Boots:</span> <a href="#">Square Toe Leather Boots</a></li>
+            <li><span class="item-type">Belt:</span> <a href="#">Tooled Leather Belt</a></li>
+          </ul>
+          <p class="outfit-description">Perfect for weekend gatherings or casual outings. This comfortable yet authentic western look balances style and practicality.</p>
+          <a href="#" class="btn btn-outline shop-this-look">Shop This Look</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Formal Western Tab -->
+    <div class="tab-content" id="formal">
+      <div class="style-outfit">
+        <div class="outfit-image">
+          <img src="assets/img/placeholder/style-formal.jpg" alt="Formal Western Outfit">
+        </div>
+        <div class="outfit-details">
+          <h4>Evening Western Elegance</h4>
+          <ul class="outfit-items">
+            <li><span class="item-type">Hat:</span> <a href="#">Premium Black Felt Hat</a></li>
+            <li><span class="item-type">Shirt:</span> <a href="#">Embroidered Western Dress Shirt</a></li>
+            <li><span class="item-type">Jacket:</span> <a href="#">Western Blazer</a></li>
+            <li><span class="item-type">Jeans:</span> <a href="#">Dark Wash Premium Denim</a></li>
+            <li><span class="item-type">Boots:</span> <a href="#">Exotic Leather Pointed Toe Boots</a></li>
+            <li><span class="item-type">Belt:</span> <a href="#">Silver Buckle Dress Belt</a></li>
+          </ul>
+          <p class="outfit-description">Make a statement at special events with this refined western ensemble that combines tradition with sophistication.</p>
+          <a href="#" class="btn btn-outline shop-this-look">Shop This Look</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Rodeo Ready Tab -->
+    <div class="tab-content" id="rodeo">
+      <div class="style-outfit">
+        <div class="outfit-image">
+          <img src="assets/img/placeholder/style-rodeo.jpg" alt="Rodeo Ready Outfit">
+        </div>
+        <div class="outfit-details">
+          <h4>Competition-Ready Rodeo Gear</h4>
+          <ul class="outfit-items">
+            <li><span class="item-type">Hat:</span> <a href="#">Straw Cowboy Hat</a></li>
+            <li><span class="item-type">Shirt:</span> <a href="#">Performance Western Shirt</a></li>
+            <li><span class="item-type">Jeans:</span> <a href="#">Competition Fit Denim</a></li>
+            <li><span class="item-type">Boots:</span> <a href="#">Bull Shoulder Performance Boots</a></li>
+            <li><span class="item-type">Belt:</span> <a href="#">Competition Belt with Trophy Buckle</a></li>
+          </ul>
+          <p class="outfit-description">Gear up for rodeo season with performance-focused western wear designed for both function and authentic style.</p>
+          <a href="#" class="btn btn-outline shop-this-look">Shop This Look</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="style-guide-footer">
+    <p>Need personalized styling advice? <a href="contact.html">Contact our western style experts</a></p>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        
+        // Display corresponding content
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  });
+</script> 

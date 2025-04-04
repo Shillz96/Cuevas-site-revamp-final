@@ -1,0 +1,139 @@
+<!-- Heritage Story Blocks Widget -->
+<section class="widget heritage-story-blocks">
+  <div class="heritage-header">
+    <h3 class="heritage-title">Our Western Heritage</h3>
+    <p class="heritage-subtitle">Crafting authentic western wear since 1995</p>
+  </div>
+  
+  <div class="heritage-timeline-container">
+    <div class="heritage-timeline">
+      <!-- Timeline element with parallax scrolling -->
+      <div class="timeline-element" data-speed="0.8">
+        <div class="timeline-year">1995</div>
+        <div class="timeline-content">
+          <h4>The Beginning</h4>
+          <div class="timeline-image">
+            <img src="assets/img/placeholder/heritage-1995.jpg" alt="Cuevas Western Wear in 1995">
+          </div>
+          <p>In 1995, the Cuevas family opened their first small workshop dedicated to crafting authentic western boots with traditional techniques and the finest materials.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-element" data-speed="0.9">
+        <div class="timeline-year">2005</div>
+        <div class="timeline-content">
+          <h4>Expanding the Collection</h4>
+          <div class="timeline-image">
+            <img src="assets/img/placeholder/heritage-2005.jpg" alt="Expanding product line in 2005">
+          </div>
+          <p>After a decade of establishing our reputation for quality boots, we expanded our offerings to include western apparel and accessories, creating complete authentic looks for our customers.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-element" data-speed="1.1">
+        <div class="timeline-year">2015</div>
+        <div class="timeline-content">
+          <h4>Digital Frontier</h4>
+          <div class="timeline-image">
+            <img src="assets/img/placeholder/heritage-2015.jpg" alt="Digital expansion in 2015">
+          </div>
+          <p>While maintaining our dedication to traditional craftsmanship, we embraced the digital age by bringing our authentic western wear to customers worldwide through our online store.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-element" data-speed="1.2">
+        <div class="timeline-year">Today</div>
+        <div class="timeline-content">
+          <h4>Continuing the Legacy</h4>
+          <div class="timeline-image">
+            <img src="assets/img/placeholder/heritage-today.jpg" alt="Cuevas Western Wear today">
+          </div>
+          <p>Today, Cuevas Western Wear proudly blends time-honored western traditions with modern styles and technologies, offering premium quality products to authentic western enthusiasts around the world.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="craftsmanship-showcase">
+    <h4 class="craftsmanship-title">Craftsmanship in Every Detail</h4>
+    
+    <div class="craft-elements">
+      <div class="craft-element">
+        <div class="craft-icon">
+          <i class="fas fa-cut"></i>
+        </div>
+        <h5>Premium Materials</h5>
+        <p>We select only the finest leathers and materials, ensuring durability and authentic western character in every product.</p>
+      </div>
+      
+      <div class="craft-element">
+        <div class="craft-icon">
+          <i class="fas fa-hands"></i>
+        </div>
+        <h5>Hand Craftsmanship</h5>
+        <p>Our skilled artisans bring decades of experience to their craft, using traditional techniques passed down through generations.</p>
+      </div>
+      
+      <div class="craft-element">
+        <div class="craft-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h5>Quality Assurance</h5>
+        <p>Every product undergoes rigorous quality checks to ensure it meets our exacting standards before reaching our customers.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="heritage-cta">
+    <a href="about-page.html" class="btn btn-accent">Discover Our Full Story</a>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Parallax scrolling effect for timeline elements
+    const timelineElements = document.querySelectorAll('.timeline-element');
+    
+    function handleScroll() {
+      timelineElements.forEach(element => {
+        const speed = parseFloat(element.getAttribute('data-speed'));
+        const rect = element.getBoundingClientRect();
+        const scrollY = window.scrollY || window.pageYOffset;
+        
+        // Only apply effect when element is in viewport
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          const yPos = -(scrollY * speed) / 10;
+          element.style.transform = `translateY(${yPos}px)`;
+        }
+      });
+    }
+    
+    // Initial positioning
+    handleScroll();
+    
+    // Update on scroll
+    window.addEventListener('scroll', handleScroll);
+    
+    // Fade-in animation for timeline elements
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+      
+      timelineElements.forEach(element => {
+        observer.observe(element);
+      });
+    } else {
+      // Fallback for browsers that don't support IntersectionObserver
+      timelineElements.forEach(element => {
+        element.classList.add('visible');
+      });
+    }
+  });
+</script> 
