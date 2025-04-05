@@ -4,151 +4,151 @@
  * Place this file in your theme directory and run it once through the browser
  */
 
-// Bootstrap WordPress
-require_once('../../../wp-load.php');
+// Load WordPress
+require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '\\wp-load.php');
+
+// Check if user is logged in and has permissions
+if (!current_user_can('manage_options')) {
+    die('You need to be an administrator to run this script.');
+}
+
+// Check if WooCommerce is active
+if (!class_exists('WooCommerce')) {
+    die('WooCommerce is not active');
+}
+
+// Function to create a placeholder image
+function create_placeholder_image($title) {
+    // Create a placeholder image file
+    $upload_dir = wp_upload_dir();
+    $filename = sanitize_title($title) . '-placeholder.jpg';
+    $file = $upload_dir['path'] . '/' . $filename;
+    
+    // Create a 800x800 image
+    $image = imagecreatetruecolor(800, 800);
+    $bg_color = imagecolorallocate($image, 245, 245, 245);
+    $text_color = imagecolorallocate($image, 100, 100, 100);
+    
+    // Fill background
+    imagefill($image, 0, 0, $bg_color);
+    
+    // Add text
+    $text = $title;
+    imagestring($image, 5, 300, 390, $text, $text_color);
+    
+    // Save image
+    imagejpeg($image, $file);
+    imagedestroy($image);
+    
+    // Prepare file data
+    $file_data = array(
+        'name' => $filename,
+        'type' => 'image/jpeg',
+        'tmp_name' => $file,
+        'error' => 0,
+        'size' => filesize($file)
+    );
+    
+    // Insert attachment into media library
+    $attachment_id = media_handle_sideload($file_data, 0);
+    
+    if (is_wp_error($attachment_id)) {
+        return false;
+    }
+    
+    return $attachment_id;
+}
 
 // Required for media handling functions
 require_once(ABSPATH . 'wp-admin/includes/file.php');
 require_once(ABSPATH . 'wp-admin/includes/media.php');
 require_once(ABSPATH . 'wp-admin/includes/image.php');
 
-// Verify admin privileges
-if (!current_user_can('manage_options')) {
-    wp_die('You do not have sufficient permissions to access this page.');
-}
-
-// Mock product data
+// Define mock products
 $mock_products = array(
     array(
         'name' => 'Western Leather Boots',
-        'description' => 'Handcrafted genuine leather boots with intricate stitching and comfortable fit. Perfect for both work and style.',
-        'price' => '299.99',
-        'image' => '5EF7A697-07FB-4BA0-A67B-FFE3C946D010-scaled.jpeg',
-        'categories' => array('Footwear', 'Featured'),
-        'featured' => true
+        'description' => 'Handcrafted leather boots with authentic western styling',
+        'price' => 299.99,
+        'categories' => array('Footwear', 'Featured')
     ),
     array(
         'name' => 'Classic Western Hat',
-        'description' => 'Premium quality western hat made from 100% wool felt. Features a decorative band and shaped brim.',
-        'price' => '189.99',
-        'image' => 'C1178884-6319-4421-9B3D-9DB67A923B1B-scaled.jpeg',
-        'categories' => array('Accessories', 'Featured'),
-        'featured' => true
+        'description' => 'Traditional western hat with premium materials',
+        'price' => 189.99,
+        'categories' => array('Accessories', 'Featured')
     ),
     array(
         'name' => 'Traditional Western Belt',
-        'description' => 'Genuine leather belt with decorative buckle. Perfect complement to any western outfit.',
-        'price' => '89.99',
-        'image' => 'IMG_3371.jpeg',
-        'categories' => array('Accessories', 'Featured'),
-        'featured' => true
+        'description' => 'Genuine leather belt with decorative buckle',
+        'price' => 89.99,
+        'categories' => array('Accessories', 'Featured')
     ),
     array(
         'name' => 'Western Denim Jacket',
-        'description' => 'Classic denim jacket with western styling. Features contrast stitching and pearl snap buttons.',
-        'price' => '159.99',
-        'image' => 'DSC8855-1-scaled.jpg',
-        'categories' => array('Outerwear', 'Featured'),
-        'featured' => true
+        'description' => 'Classic denim jacket with western-inspired details',
+        'price' => 159.99,
+        'categories' => array('Outerwear', 'Featured')
     )
 );
 
-// Create product categories if they don't exist
-$categories = array('Footwear', 'Accessories', 'Outerwear', 'Featured');
-foreach ($categories as $category_name) {
-    if (!term_exists($category_name, 'product_cat')) {
-        wp_insert_term($category_name, 'product_cat');
-    }
-}
-
-// Function to get image ID from filename
-function get_image_id_from_filename($filename) {
-    $upload_dir = wp_upload_dir();
-    $source_path = "C:/Users/I7 8700k/Local Sites/Cuevas-site-revamp-final/Featured prodcuts/" . $filename;
-    
-    // Check if file exists
-    if (!file_exists($source_path)) {
-        return false;
-    }
-    
-    // Prepare file for upload
-    $file = array(
-        'name' => $filename,
-        'tmp_name' => $source_path
-    );
-    
-    // Copy file to uploads directory
-    $upload = wp_handle_sideload(
-        $file,
-        array('test_form' => false)
-    );
-    
-    if (isset($upload['error'])) {
-        return false;
-    }
-    
-    // Prepare attachment data
-    $attachment = array(
-        'post_mime_type' => $upload['type'],
-        'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
-        'post_content' => '',
-        'post_status' => 'inherit'
-    );
-    
-    // Insert attachment
-    $attach_id = wp_insert_attachment($attachment, $upload['file']);
-    
-    // Generate attachment metadata
-    require_once(ABSPATH . 'wp-admin/includes/image.php');
-    $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
-    wp_update_attachment_metadata($attach_id, $attach_data);
-    
-    return $attach_id;
-}
-
-// Add products
+// Create products
 foreach ($mock_products as $product_data) {
     // Check if product already exists
     $existing_product = get_page_by_title($product_data['name'], OBJECT, 'product');
+    
     if ($existing_product) {
-        continue; // Skip if product exists
+        $product = wc_get_product($existing_product->ID);
+        echo "Updating existing product: {$product_data['name']}<br>";
+    } else {
+        $product = new WC_Product_Simple();
+        echo "Creating new product: {$product_data['name']}<br>";
     }
     
-    // Create product
-    $product = new WC_Product_Simple();
+    // Set product data
     $product->set_name($product_data['name']);
     $product->set_description($product_data['description']);
     $product->set_regular_price($product_data['price']);
     $product->set_status('publish');
     
-    // Set product as featured if specified
-    if ($product_data['featured']) {
-        $product->set_featured(true);
-    }
+    // Explicitly set as featured
+    $product->set_featured(true);
     
-    // Save product to get ID
+    // Save product first to get ID
     $product_id = $product->save();
     
-    // Set product image
-    if ($product_data['image']) {
-        $image_id = get_image_id_from_filename($product_data['image']);
-        if ($image_id) {
-            $product->set_image_id($image_id);
-            $product->save();
-        }
-    }
-    
-    // Set product categories
-    if (!empty($product_data['categories'])) {
-        $category_ids = array();
-        foreach ($product_data['categories'] as $category_name) {
-            $term = get_term_by('name', $category_name, 'product_cat');
-            if ($term) {
-                $category_ids[] = $term->term_id;
+    if ($product_id) {
+        echo "Product '{$product_data['name']}' saved successfully (ID: $product_id)<br>";
+        
+        // Add featured image if none exists
+        if (!has_post_thumbnail($product_id)) {
+            $image_id = create_placeholder_image($product_data['name']);
+            if ($image_id) {
+                set_post_thumbnail($product_id, $image_id);
+                echo "Added placeholder image to product<br>";
             }
         }
-        wp_set_object_terms($product_id, $category_ids, 'product_cat');
+        
+        // Add categories
+        foreach ($product_data['categories'] as $category_name) {
+            $term = get_term_by('name', $category_name, 'product_cat');
+            
+            if (!$term) {
+                $term = wp_insert_term($category_name, 'product_cat');
+                if (!is_wp_error($term)) {
+                    echo "Created category: $category_name<br>";
+                }
+            }
+            
+            if (!is_wp_error($term)) {
+                wp_set_object_terms($product_id, $category_name, 'product_cat', true);
+                echo "Added product to category: $category_name<br>";
+            }
+        }
+        echo "<hr>";
+    } else {
+        echo "Failed to save product '{$product_data['name']}'<br><hr>";
     }
 }
 
-echo 'Mock products have been added successfully!'; 
+echo "<br>Done! <a href='/wp-admin/edit.php?post_type=product'>View products in admin</a>"; 
