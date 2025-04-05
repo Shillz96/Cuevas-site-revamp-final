@@ -1,17 +1,16 @@
-# Ignore everything
-/*
+# Ignore EVERYTHING
+*
+*/
+**/*
 
-# But not these files/folders
+# Only track the cuevas-theme folder and its contents
 !.gitignore
 !app/
-app/*
 !app/public/
-app/public/*
 !app/public/wp-content/
-app/public/wp-content/*
 !app/public/wp-content/themes/
-app/public/wp-content/themes/*
 !app/public/wp-content/themes/cuevas-theme/
+!app/public/wp-content/themes/cuevas-theme/**
 
 # Still ignore these within the allowed folder
 app/public/wp-content/themes/cuevas-theme/**/.DS_Store
