@@ -1,0 +1,16 @@
+/*
+Theme Name: Cowboy Western Store
+Theme URI: https://example.com/cowboy-western-store
+Author: Cowboy Western Store
+Author URI: https://example.com
+Description: A modern, responsive WordPress theme for Cowboy Western Store e-commerce store. Built for WooCommerce with premium design features.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: cowboy
+Tags: e-commerce, custom-colors, custom-menu, custom-logo, featured-images, footer-widgets, responsive-layout, woocommerce
+*/
+
+/* This file is required for WordPress to recognize the theme.
+   Actual styles are in the /assets/css/ directory and are enqueued via functions.php
+*/ 
