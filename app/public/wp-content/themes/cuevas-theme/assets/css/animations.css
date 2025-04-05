@@ -380,4 +380,108 @@
     padding: 8px 12px;
     font-size: 0.9em;
   }
+}
+
+/* === Gallery Section Styles === */
+
+#section-gallery {
+    overflow: hidden; /* Needed for pinning */
+    /* Add position: relative; if needed for absolute children */
+}
+
+.gallery-slide {
+     height: 100vh; /* Essential for pinning logic */
+     width: 100%;
+     position: relative; /* Usually needed for positioning children */
+     overflow: hidden; /* Good practice for parallax */
+}
+
+.gallery-slide .inner-slide img { /* Match the structure */
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+
+.gallery-slide .inner-slide .slide-caption { /* Match the structure */
+     /* Initial state for animation */
+     opacity: 0;
+     visibility: hidden;
+     transform: translateY(20px);
+     /* Add your positioning/styling here */
+     position: absolute;
+     bottom: 5%;
+     left: 5%;
+     z-index: 10; /* Ensure it's above the image */
+     background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+     padding: 1rem 1.5rem;
+     color: white;
+     border-radius: 4px;
+     max-width: 80%;
+}
+
+.gallery-slide .inner-slide .slide-caption h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Gallery Controls (Example Styling - Adjust as needed) */
+.gallery-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+.gallery-arrow,
+.gallery-dot {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: opacity 0.2s ease;
+}
+
+.gallery-arrow:hover,
+.gallery-dot:hover {
+    opacity: 0.7;
+}
+
+.gallery-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.gallery-dot {
+    font-size: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 0;
+}
+
+.gallery-dot.active {
+    background-color: white;
+}
+
+/* Scroll Tip (Example Styling - Adjust as needed) */
+.scroll-tip {
+    position: absolute;
+    bottom: 10px; 
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    z-index: 15;
 } 

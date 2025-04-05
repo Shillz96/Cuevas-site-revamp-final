@@ -26,7 +26,7 @@ function cuevas_scripts() {
     // Check if the file exists before enqueueing
     $animation_css_path = get_template_directory() . '/assets/css/animations.css';
     if ( file_exists( $animation_css_path ) ) {
-        wp_enqueue_style( 'cuevas-animations-style', get_template_directory_uri() . '/assets/css/animations.css', array('cuevas-style'), defined('CUEVAS_VERSION') ? CUEVAS_VERSION : false );
+        wp_enqueue_style( 'cuevas-animations-style', get_template_directory_uri() . '/assets/css/animations.css', array('cuevas-style'), time() );
     }
 
 	// Enqueue Custom Animation Script
@@ -37,7 +37,7 @@ function cuevas_scripts() {
             'cuevas-animations',
             get_template_directory_uri() . '/assets/js/main-animations.js',
             array('gsap-core', 'gsap-scrolltrigger'), // Dependencies
-            defined('CUEVAS_VERSION') ? CUEVAS_VERSION : false, // Use theme version for cache busting
+            time(), // Use current time for cache busting
             true // Load in footer
         );
     }
