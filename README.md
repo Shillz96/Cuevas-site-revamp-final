@@ -146,4 +146,43 @@ This project is proprietary and confidential. Unauthorized copying or distributi
 
 ## Support
 
-For development questions or support, please contact the development team. 
+For development questions or support, please contact the development team.
+
+## Theme Structure
+
+The theme follows a standard WordPress structure, with enhancements for organization:
+
+- **`/` (Root):** Contains standard template files (`index.php`, `page.php`, `single.php`, `archive.php`, `header.php`, `footer.php`, `style.css`, etc.).
+- **`functions.php`:** Main functions file, kept minimal. Includes files from the `/inc` directory.
+- **`/inc`:** Contains modular PHP files for theme functionality:
+  - `theme-setup.php`: Theme support, nav menus, image sizes.
+  - `enqueue.php`: Script and style enqueueing (including GSAP).
+  - `template-tags.php`: Custom functions for use in templates.
+  - `woocommerce.php`: WooCommerce specific hooks and functions.
+  - `wp-cli.php`: Custom WP-CLI command registration and logic.
+  - `helpers.php`: General utility functions.
+  - `debug.php`: Debugging utility functions (conditionally loaded).
+- **`/template-parts`:** Holds reusable template partials (e.g., `content-page.php`, `content-post.php`) included via `get_template_part()`.
+- **`/assets`:** Contains all front-end assets:
+  - `/css`: Stylesheets.
+    - `animations.css`: Initial states and structural CSS specifically for GSAP animations.
+  - `/js`: JavaScript files.
+    - `main-animations.js`: All custom GSAP animation logic.
+  - `/images`: Theme images.
+  - `/fonts`: Theme fonts.
+- **`/woocommerce`:** Contains WooCommerce template overrides.
+- **`.cursorules/`**: Contains rules for the Cursor AI assistant to help maintain code standards.
+  - `gsap-wordpress-structure.mdc`: Rules specifically for GSAP integration and code separation.
+
+## GSAP Integration
+
+GSAP animations are handled following best practices for WordPress integration:
+
+1.  **Enqueueing:** GSAP library and the custom `main-animations.js` script are enqueued via `inc/enqueue.php`.
+2.  **Styling:** Initial states for animated elements are defined in `assets/css/animations.css`.
+3.  **Animation Logic:** All GSAP tweens, timelines, and ScrollTrigger instances reside in `assets/js/main-animations.js`.
+4.  **HTML Structure:** PHP templates output the necessary HTML with classes/IDs targeted by the JavaScript.
+
+## Custom WP-CLI Commands
+
+Custom WP-CLI commands are defined in `inc/wp-cli.php`. Refer to the code comments within that file for usage details. 

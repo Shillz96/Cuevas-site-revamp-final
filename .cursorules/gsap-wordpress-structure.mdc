@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# .cursor Rule for Cuevas Theme GSAP & WordPress Structure
+
+# Core Principle
+- Maintain strict separation of concerns: PHP for structure/logic, CSS for initial state/styling, JS for GSAP animations.
+
+# File Structure
+- **PHP Templates (`*.php`):** Contain only HTML structure and PHP logic for content generation. Use semantic classes/IDs for animation targets.
+    - Example Target: `<h1 class="hero-title-anim">Title</h1>`
+- **`functions.php`:** Keep minimal. Primarily includes files from the `inc/` directory.
+- **`inc/enqueue.php`:** Handles ALL script (`wp_enqueue_script`) and style (`wp_enqueue_style`) registration and enqueueing.
+    - Enqueue GSAP library (CDN or local `assets/js/vendor/`).
+    - Enqueue custom animation JS (`assets/js/main-animations.js`) with GSAP library as a dependency.
+    - Enqueue animation-specific CSS (`assets/css/animations.css`).
+    - Use `wp_localize_script` here to pass data from PHP to JS if needed.
+- **`assets/css/animations.css`:** Define ONLY initial states (e.g., `opacity: 0;`, `transform: translateY(20px);`) for elements animated by GSAP and any structural CSS needed *specifically* for the animations.
+- **`assets/js/main-animations.js`:** Contains ALL GSAP code (tweens, timelines, ScrollTrigger).
+    - Wrap code in `DOMContentLoaded` listener.
+    - Use `gsap.context()` for proper cleanup.
+    - Select elements using classes/IDs defined in PHP templates.
+    - Access localized data via the object passed by `wp_localize_script`.
+
+# Prohibitions
+- **NO** inline `<script>` tags for GSAP in PHP templates.
+- **NO** inline `style` attributes for setting animation initial states in PHP templates (use `animations.css`).
+- **NO** hardcoding `<link>` or `<script>` tags for assets in `header.php` or `footer.php` (use `inc/enqueue.php`).
+- **NO** GSAP code outside `assets/js/main-animations.js`.
+- **NO** CSS defining the actual animation (e.g., `@keyframes`, `transition`) - GSAP handles this in JS. CSS is only for the *start* state.
