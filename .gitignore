@@ -1,0 +1,79 @@
+# Ignore EVERYTHING
+*
+*/
+**/*
+
+# Only track the cuevas-theme folder and its contents
+!.gitignore
+!app/
+!app/public/
+!app/public/wp-content/
+!app/public/wp-content/themes/
+!app/public/wp-content/themes/cuevas-theme/
+!app/public/wp-content/themes/cuevas-theme/**
+
+# Still ignore these within the allowed folder
+app/public/wp-content/themes/cuevas-theme/**/.DS_Store
+app/public/wp-content/themes/cuevas-theme/**/*.log
+app/public/wp-content/themes/cuevas-theme/**/node_modules/
+app/public/wp-content/themes/cuevas-theme/**/vendor/
+app/public/wp-content/themes/cuevas-theme/**/*.local
+
+# WordPress specific
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/backups/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+sitemap.xml
+sitemap.xml.gz
+project-docs
+archive
+
+
+# Local by Flywheel specific
+/sql/
+/logs/
+/conf/
+/.htaccess
+
+# WordPress core (if not on custom directory)
+/wp-admin/
+/wp-includes/
+/index.php
+/license.txt
+/readme.html
+/wp-*.php
+/xmlrpc.php
+
+# Configuration
+*.log
+.htaccess
+.env
+
+# Packages
+node_modules/
+vendor/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# Local development
+*.local
+local-config.php 
