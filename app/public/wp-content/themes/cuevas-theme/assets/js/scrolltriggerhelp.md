@@ -1,3 +1,153 @@
+# GSAP + Lenis Scrolling Reference
+
+This document provides guidance on how the smooth scrolling system works in Cuevas Western Wear theme.
+
+## Core Technologies
+
+1. **GSAP (GreenSock Animation Platform)** - Powers all animations
+2. **ScrollTrigger Plugin** - Creates scroll-based animations and section snapping
+3. **Lenis** - Handles smooth scrolling with optimized performance
+4. **ScrollToPlugin** - For programmatic smooth scrolling to specific sections
+
+## Key Implementation Details
+
+### Smooth Scrolling with Lenis
+
+Lenis provides smooth scrolling that works across all browsers and devices. Key configuration:
+
+```javascript
+const lenis = new Lenis({
+    duration: 1.2,           // Scroll duration
+    smoothWheel: true,       // Enable smooth mousewheel
+    touchMultiplier: 1.5,    // Touch sensitivity
+    wheelMultiplier: 1.5,    // Wheel sensitivity
+    smooth: 0.08,            // Smoothness (lower = smoother)
+    orientation: 'vertical'  // Scroll direction
+});
+
+// Integrate with GSAP ticker for precise animation syncing
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+});
+
+// Keep ScrollTrigger in sync with Lenis
+lenis.on('scroll', ScrollTrigger.update);
+```
+
+### Section-Based Navigation
+
+The implementation creates a section-based scrolling experience with these key features:
+
+1. **Section Snapping** - Sections snap into place for a fullscreen experience
+2. **Navigation Controls** - Dots on the right for direct section navigation
+3. **Keyboard & Touch Navigation** - Accessible controls for all devices
+4. **Scroll Wheel Control** - Smoothly navigate between sections with wheel
+
+### GSAP ScrollTrigger Implementation
+
+ScrollTrigger creates section triggers and animations:
+
+```javascript
+// Basic section trigger
+ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom top',
+    onEnter: () => updateSectionVisibility(index),
+    onEnterBack: () => updateSectionVisibility(index)
+});
+
+// Animate elements when section becomes visible
+ScrollTrigger.create({
+    trigger: section,
+    start: 'top 80%',
+    once: true,
+    onEnter: () => {
+        gsap.from(elements, {
+            y: 50,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+    }
+});
+```
+
+### Handling Touch & Wheel Events
+
+Custom event handlers provide smooth navigation control:
+
+```javascript
+// Wheel events
+document.addEventListener('wheel', (e) => {
+    // Debounce wheel events
+    clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => {
+        const direction = e.deltaY > 0 ? 1 : -1;
+        const nextSection = currentSection + direction;
+        if (nextSection >= 0 && nextSection < sections.length) {
+            scrollToSection(nextSection);
+        }
+    }, 50);
+});
+
+// Touch events
+document.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+});
+
+document.addEventListener('touchend', (e) => {
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartY - touchEndY;
+    if (Math.abs(deltaY) > 50) {
+        const direction = deltaY > 0 ? 1 : -1;
+        const nextSection = currentSection + direction;
+        if (nextSection >= 0 && nextSection < sections.length) {
+            scrollToSection(nextSection);
+        }
+    }
+});
+```
+
+## Accessibility Features
+
+The implementation includes important accessibility features:
+
+1. **Keyboard Navigation** - Arrow keys, Home/End, and Page Up/Down navigate sections
+2. **ARIA Attributes** - Proper labeling for screen readers
+3. **Focus Management** - Interactive elements are properly focusable 
+4. **Reduced Motion Support** - Respects user's motion preferences
+5. **Screen Reader Announcements** - Section changes are announced
+
+## Performance Optimization
+
+Performance techniques implemented:
+
+1. **RAF Integration** - RequestAnimationFrame synchronization between Lenis and GSAP
+2. **Event Debouncing** - Prevents excessive event handling
+3. **Will-change Hints** - Used sparingly for elements that animate frequently
+4. **Transform/Opacity** - Prioritizing GPU-accelerated properties
+5. **Cleanup Routines** - All animations are properly cleaned up when not needed
+
+## Customizing the Implementation
+
+To customize the scrolling behavior:
+
+1. Modify the CONFIG object at the top of home-animations.js
+2. Adjust section animations in the initSectionAnimations() function
+3. Change timing/easing in individual animation calls
+4. Add new sections by following the pattern in front-page.php
+
+## Common Issues & Solutions
+
+1. **Scrolling feels jumpy** - Check Lenis smoothness settings or reduce animations
+2. **Section transitions too slow/fast** - Adjust CONFIG.ANIMATION_DURATION
+3. **Mobile performance issues** - Simplify animations for mobile or use media queries
+4. **Elements animate incorrectly** - Check ScrollTrigger start/end positions
+5. **Accessibility problems** - Ensure all interactive elements have proper ARIA roles and keyboard support
+
 Nesting ScrollTriggers inside multiple timeline tweens
 A very common mistake is applying ScrollTrigger to multiple tweens that are nested inside a timeline. Logic-wise, that can't work. When you nest an animation in a timeline, that means the playhead of the parent timeline is what controls the playhead of the child animations (they all must be synchronized otherwise it wouldn't make any sense). When you add a ScrollTrigger with scrub, you're basically saying "I want the playhead of this animation to be controlled by the scrollbar position"...you can't have both. For example, what if the parent timeline is playing forward but the user also is scrolling backwards? See the problem? It can't go forward and backward at the same time, and you wouldn't want the playhead to get out of sync with the parent timeline's. Or what if the parent timeline is paused but the user is scrolling?
 

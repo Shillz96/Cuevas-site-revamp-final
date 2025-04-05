@@ -149,17 +149,26 @@ function cuevas_theme_scripts() {
 	// Google Fonts
 	wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap', array(), '1.0.0');
 	
+	// Add the observer fixes very early to prevent errors
+    wp_enqueue_script(
+        'cuevas-observers-fix',
+        get_template_directory_uri() . '/js/fix-observers.js',
+        array(), // No dependencies to ensure it loads early
+        null,    // No version
+        false    // Load in header
+    );
+	
 	// jQuery
 	wp_enqueue_script('jquery');
 	
+	// Lenis Smooth Scrolling - enqueued before GSAP
+	wp_enqueue_script('lenis-smooth-scroll', 'https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.27/dist/lenis.min.js', array(), '1.0.27', true);
+	
 	// GSAP Core - from CDN for better performance
-	wp_enqueue_script('gsap-core', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array(), '3.12.7', true);
+	wp_enqueue_script('gsap-core', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array('lenis-smooth-scroll'), '3.12.7', true);
 	
 	// GSAP ScrollTrigger
 	wp_enqueue_script('gsap-scrolltrigger', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js', array('gsap-core'), '3.12.7', true);
-	
-	// GSAP SplitText
-	wp_enqueue_script('gsap-splittext', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/SplitText.min.js', array('gsap-core'), '3.12.7', true);
 	
 	// GSAP ScrollTo Plugin
 	wp_enqueue_script('gsap-scrollto', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollToPlugin.min.js', array('gsap-core'), '3.12.7', true);
@@ -176,7 +185,7 @@ function cuevas_theme_scripts() {
     }
 
     if (is_front_page()) {
-        wp_enqueue_script('cuevas-home-animations', get_template_directory_uri() . '/assets/js/home-animations.js', array('jquery', 'gsap-core', 'gsap-scrolltrigger', 'gsap-splittext', 'gsap-scrollto'), '1.0.0', true);
+        wp_enqueue_script('cuevas-home-animations', get_template_directory_uri() . '/assets/js/home-animations.js', array('jquery', 'gsap-core', 'gsap-scrolltrigger', 'gsap-scrollto', 'lenis-smooth-scroll'), '1.0.0', true);
         wp_enqueue_script('cuevas-hero-customizer', get_template_directory_uri() . '/assets/js/hero-customizer.js', array('gsap-core'), _S_VERSION, true);
     }
 
@@ -371,7 +380,7 @@ function cuevas_initialize_gsap() {
     ?>
     <script>
         // Register GSAP plugins
-        gsap.registerPlugin(ScrollTrigger, SplitText);
+        gsap.registerPlugin(ScrollTrigger);
 
         // Default GSAP configuration
         gsap.config({
@@ -405,20 +414,19 @@ function cuevas_initialize_gsap() {
             });
         };
 
-        // Utility function for text reveal animations
+        // Utility function for text reveal animations (simplified, no SplitText)
         window.createTextReveal = function(element, options = {}) {
-            const splitText = new SplitText(element, {
-                type: 'lines,words,chars',
-                linesClass: 'split-line'
-            });
-
+            if (!element) return;
+            
             const defaults = {
                 duration: 0.8,
                 ease: 'power2.out',
-                stagger: 0.02
+                y: 20,
+                opacity: 0
             };
 
-            return gsap.from(splitText.chars, {
+            // Simple animation without SplitText
+            return gsap.from(element, {
                 ...defaults,
                 ...options,
                 scrollTrigger: {
@@ -861,4 +869,593 @@ function cuevas_customize_register($wp_customize) {
         )));
     }
 }
-add_action('customize_register', 'cuevas_customize_register'); 
+add_action('customize_register', 'cuevas_customize_register');
+
+/**
+ * Debugging function to verify featured images (only visible to admins)
+ */
+function cuevas_debug_featured_images() {
+    if (!is_front_page() || !current_user_can('administrator')) {
+        return;
+    }
+    
+    // Get featured product images from customizer
+    $featured_images = array();
+    for ($i = 1; $i <= 5; $i++) {
+        $image = get_theme_mod('featured_product_image_' . $i);
+        if ($image) {
+            $featured_images[$i] = $image;
+        }
+    }
+    
+    if (empty($featured_images)) {
+        echo '<div style="position: fixed; bottom: 0; right: 0; background: red; color: white; padding: 10px; z-index: 9999; font-size: 12px;">
+            No featured product images found in customizer. Add them in Customizer > Featured Products Slider.
+        </div>';
+    } else {
+        echo '<div style="position: fixed; bottom: 0; right: 0; background: green; color: white; padding: 10px; z-index: 9999; font-size: 12px; max-width: 300px; overflow: auto;">';
+        echo 'Found ' . count($featured_images) . ' featured product images.<br>';
+        foreach ($featured_images as $key => $url) {
+            echo "Image $key: " . basename($url) . "<br>";
+        }
+        echo '</div>';
+    }
+}
+add_action('wp_footer', 'cuevas_debug_featured_images', 100);
+
+/**
+ * Add admin notice to help with featured slider setup
+ */
+function cuevas_featured_slider_admin_notice() {
+    $screen = get_current_screen();
+    
+    // Only show on dashboard and customizer
+    if (!($screen->id === 'dashboard' || $screen->id === 'customize')) {
+        return;
+    }
+    
+    // Count featured images
+    $count = 0;
+    for ($i = 1; $i <= 5; $i++) {
+        if (get_theme_mod('featured_product_image_' . $i)) {
+            $count++;
+        }
+    }
+    
+    // Show notice if less than 2 images
+    if ($count < 2) {
+        ?>
+        <div class="notice notice-info is-dismissible">
+            <p><strong>Cuevas Theme:</strong> For the featured product slider to work correctly, please add at least 2-3 images in <a href="<?php echo admin_url('customize.php?autofocus[section]=cuevas_featured_products'); ?>">Customizer &gt; Featured Products Slider</a>.</p>
+            <p>Images should be high quality and at least 1920×1080px in size for best results.</p>
+        </div>
+        <?php
+    }
+}
+add_action('admin_notices', 'cuevas_featured_slider_admin_notice');
+
+/**
+ * Disable all GSAP animations in customizer preview to prevent errors
+ */
+function cuevas_disable_gsap_in_customizer() {
+    // Only modify scripts in customizer preview
+    if (is_customize_preview()) {
+        // Remove all GSAP-related scripts in customizer preview
+        wp_dequeue_script('gsap-core');
+        wp_dequeue_script('gsap-scrolltrigger');
+        wp_dequeue_script('gsap-scrollto');
+        wp_dequeue_script('cuevas-animations');
+        wp_dequeue_script('cuevas-home-animations');
+        wp_dequeue_script('cuevas-about-animations');
+        wp_dequeue_script('cuevas-product-page');
+        wp_dequeue_script('cuevas-hero-customizer');
+        
+        // Add a simple CSS-only fallback for the customizer
+        add_action('wp_head', 'cuevas_add_customizer_css');
+    }
+}
+add_action('wp_enqueue_scripts', 'cuevas_disable_gsap_in_customizer', 100);
+
+/**
+ * Add simple CSS animations for customizer preview
+ */
+function cuevas_add_customizer_css() {
+    if (!is_customize_preview()) {
+        return;
+    }
+    ?>
+    <style>
+    /* Simple customizer animations */
+    .hero-title, .hero-subtitle {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    /* Featured slider in customizer */
+    .featured-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 1.5s ease;
+        transform: none !important;
+    }
+    
+    /* Make first slide visible */
+    .featured-slide:first-child {
+        opacity: 1;
+        z-index: 2;
+    }
+    
+    /* Simple slide rotation */
+    @keyframes slideFade {
+        0%, 20% { opacity: 1; z-index: 2; }
+        25%, 95% { opacity: 0; z-index: 1; }
+        100% { opacity: 0; z-index: 1; }
+    }
+    
+    /* Apply animation to each slide */
+    .featured-section .featured-slide {
+        animation: slideFade 16s infinite;
+    }
+    
+    .featured-section .featured-slide:nth-child(2) {
+        animation-delay: 4s;
+    }
+    
+    .featured-section .featured-slide:nth-child(3) {
+        animation-delay: 8s;
+    }
+    
+    .featured-section .featured-slide:nth-child(4) {
+        animation-delay: 12s;
+    }
+    
+    .featured-section .featured-slide:nth-child(5) {
+        animation-delay: 16s;
+    }
+    
+    /* Progress bar animation */
+    .progress-fill {
+        animation: progressAnim 16s infinite linear;
+        width: 0;
+    }
+    
+    @keyframes progressAnim {
+        0% { width: 0; }
+        100% { width: 100%; }
+    }
+    
+    /* Fix for slide content */
+    .slide-number {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    </style>
+    <script>
+    // Simple script to make the customizer preview work without GSAP
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Simple customizer animation fallback loaded');
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Clean up old functions that might be causing conflicts
+ */
+function cuevas_remove_conflicting_functions() {
+    // Remove all potentially conflicting functions
+    remove_action('wp_footer', 'cuevas_customizer_preview_scripts', 5);
+    remove_action('wp_enqueue_scripts', 'cuevas_enqueue_gsap_with_fallback', 999);
+}
+add_action('init', 'cuevas_remove_conflicting_functions');
+
+/**
+ * Priority GSAP loading for homepage
+ */
+function cuevas_priority_gsap_loading() {
+    // Check if we're on the front page
+    if (is_front_page()) {
+        // Remove the disable GSAP in customizer function for the front page
+        remove_action('wp_enqueue_scripts', 'cuevas_disable_gsap_in_customizer', 100);
+        
+        // First deregister any existing GSAP scripts to avoid conflicts
+        wp_deregister_script('gsap');
+        wp_deregister_script('gsap-core');
+        wp_deregister_script('gsap-scrolltrigger');
+        wp_deregister_script('gsap-scrollto');
+        
+        // Register GSAP with both 'gsap' and 'gsap-core' handles to ensure compatibility
+        wp_register_script('gsap', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array(), '3.12.7', false);
+        wp_register_script('gsap-core', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array(), '3.12.7', false);
+        
+        // Register ScrollTrigger and ScrollToPlugin
+        wp_register_script('scrolltrigger', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js', array('gsap'), '3.12.7', false);
+        wp_register_script('scrollto', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollToPlugin.min.js', array('gsap'), '3.12.7', false);
+        
+        // Also register with the gsap- prefix for backward compatibility
+        wp_register_script('gsap-scrolltrigger', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js', array('gsap'), '3.12.7', false);
+        wp_register_script('gsap-scrollto', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollToPlugin.min.js', array('gsap'), '3.12.7', false);
+        
+        // Enqueue all scripts
+        wp_enqueue_script('gsap');
+        wp_enqueue_script('scrolltrigger');
+        wp_enqueue_script('scrollto');
+        
+        // Re-register and enqueue home-animations.js with correct dependencies
+        wp_deregister_script('cuevas-home-animations');
+        wp_register_script('cuevas-home-animations', get_template_directory_uri() . '/assets/js/home-animations.js', array('jquery', 'gsap', 'scrolltrigger', 'scrollto'), '1.0.0', true);
+        wp_enqueue_script('cuevas-home-animations');
+    }
+}
+add_action('wp_enqueue_scripts', 'cuevas_priority_gsap_loading', 5);
+
+/**
+ * Add home page specific styles
+ */
+function cuevas_add_home_page_inline_styles() {
+    if (!is_front_page()) {
+        return;
+    }
+    
+    ?>
+    <style>
+    /* Initial styles to prevent flash of unstyled content */
+    html, body {
+        overflow-x: hidden;
+    }
+    
+    /* Initial state for transitions */
+    .fullpage-wrapper {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    
+    .fullpage-wrapper.initialized {
+        opacity: 1;
+    }
+    
+    /* Hero text visibility */
+    .hero-title, .hero-subtitle {
+        opacity: 1 !important;
+    }
+    
+    /* Add overlay to hero section if needed */
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1;
+    }
+
+    /* When javascript is disabled */
+    .no-js .fullpage-wrapper {
+        opacity: 1;
+    }
+    
+    /* Fullscreen Section Layout */
+    .fullscreen-section {
+        min-height: 100vh;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 0;
+        box-sizing: border-box;
+    }
+    
+    /* Section Navigation Dots */
+    .section-nav-dots {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-dot.active {
+        background: #ffffff;
+        transform: scale(1.3);
+    }
+    
+    /* Smooth Scroll Wrapper */
+    .smooth-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+    
+    /* Media Queries */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+        
+        .section-nav-dots {
+            right: 10px;
+        }
+        
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+        }
+    }
+    </style>
+    <script>
+    // Fix for MutationObserver error
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix for MutationObserver error
+        if (typeof MutationObserver !== 'undefined') {
+            const originalMutationObserve = MutationObserver.prototype.observe;
+            MutationObserver.prototype.observe = function(target, options) {
+                if (target && target.nodeType === 1) {
+                    originalMutationObserve.call(this, target, options);
+                } else {
+                    console.warn('Prevented MutationObserver error with invalid target');
+                }
+            };
+            console.log('MutationObserver patched');
+        }
+        
+        // Fix for ResizeObserver error
+        if (typeof ResizeObserver !== 'undefined') {
+            const originalResizeObserve = ResizeObserver.prototype.observe;
+            ResizeObserver.prototype.observe = function(target, options) {
+                if (target && target.nodeType === 1) {
+                    originalResizeObserve.call(this, target, options);
+                } else {
+                    console.warn('Prevented ResizeObserver error with invalid target');
+                }
+            };
+            console.log('ResizeObserver patched');
+        }
+        
+        // Check if GSAP is available
+        if (typeof gsap !== 'undefined') {
+            console.log('GSAP found in early initialization');
+            
+            if (typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                console.log('ScrollTrigger registered early');
+            }
+            
+            if (typeof ScrollToPlugin !== 'undefined') {
+                gsap.registerPlugin(ScrollToPlugin);
+                console.log('ScrollToPlugin registered early');
+            }
+        } else {
+            console.error('GSAP not found! Check script loading.');
+        }
+        
+        // Fix fullscreen sections
+        const sections = document.querySelectorAll('.fullscreen-section');
+        if (sections.length > 0) {
+            console.log('Found fullscreen sections:', sections.length);
+            
+            // Set each section to full viewport height
+            sections.forEach(section => {
+                section.style.minHeight = '100vh';
+                section.style.width = '100%';
+                section.style.position = 'relative';
+            });
+            
+            // Initialize Lenis smooth scroll if available
+            if (window.Lenis) {
+                console.log('Initializing Lenis for smooth scrolling');
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    orientation: 'vertical',
+                    gestureOrientation: 'vertical',
+                    smoothWheel: true,
+                    smoothTouch: false,
+                    wheelMultiplier: 1,
+                    touchMultiplier: 2
+                });
+                
+                // Add scrolling functions
+                const scrollToSection = (index) => {
+                    if (sections[index]) {
+                        const top = sections[index].offsetTop;
+                        if (window.gsap && window.ScrollToPlugin) {
+                            gsap.to(window, {
+                                duration: 1, 
+                                scrollTo: {y: top, autoKill: false},
+                                ease: 'power2.inOut'
+                            });
+                        } else {
+                            lenis.scrollTo(top, {duration: 1.2});
+                        }
+                    }
+                };
+                
+                // Add navigation dots if they don't exist
+                if (!document.querySelector('.section-nav-dots')) {
+                    const navDots = document.createElement('div');
+                    navDots.className = 'section-nav-dots';
+                    navDots.style.cssText = `
+                        position: fixed;
+                        right: 20px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        z-index: 100;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                    `;
+                    
+                    sections.forEach((section, index) => {
+                        const dot = document.createElement('button');
+                        dot.className = 'nav-dot';
+                        dot.setAttribute('aria-label', `Scroll to section ${index + 1}`);
+                        dot.style.cssText = `
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 50%;
+                            background: rgba(255,255,255,0.5);
+                            border: none;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        `;
+                        dot.addEventListener('click', () => scrollToSection(index));
+                        navDots.appendChild(dot);
+                    });
+                    
+                    document.body.appendChild(navDots);
+                }
+                
+                // Integrate with GSAP ScrollTrigger if available
+                if (window.gsap && window.ScrollTrigger) {
+                    sections.forEach((section, index) => {
+                        ScrollTrigger.create({
+                            trigger: section,
+                            start: 'top center',
+                            end: 'bottom center',
+                            onEnter: () => highlightDot(index),
+                            onEnterBack: () => highlightDot(index)
+                        });
+                    });
+                    
+                    function highlightDot(index) {
+                        const dots = document.querySelectorAll('.nav-dot');
+                        dots.forEach((dot, i) => {
+                            if (i === index) {
+                                dot.style.background = '#ffffff';
+                                dot.style.transform = 'scale(1.3)';
+                            } else {
+                                dot.style.background = 'rgba(255,255,255,0.5)';
+                                dot.style.transform = 'scale(1)';
+                            }
+                        });
+                    }
+                }
+                
+                // Connect lenis to requestAnimationFrame
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+                
+                console.log('Fullscreen sections initialized with smooth scrolling');
+            }
+        }
+    });
+    
+    // Full initialization on page load
+    window.addEventListener('load', function() {
+        // Fade in the page
+        setTimeout(function() {
+            var wrapper = document.querySelector('.fullpage-wrapper');
+            if (wrapper) {
+                wrapper.classList.add('initialized');
+            }
+        }, 100);
+
+        // Ensure proper scrolling
+        document.documentElement.style.overflowX = 'hidden';
+        document.documentElement.style.overflowY = 'auto';
+    });
+    </script>
+    <?php
+}
+add_action('wp_head', 'cuevas_add_home_page_inline_styles', 5); // Higher priority for earlier loading 
+
+/**
+ * Fix ResizeObserver errors in console
+ */
+function cuevas_fix_resize_observer() {
+    ?>
+    <script>
+    // MonkeyPatch ResizeObserver to prevent errors with invalid nodes
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof ResizeObserver !== 'undefined') {
+            const originalObserve = ResizeObserver.prototype.observe;
+            ResizeObserver.prototype.observe = function(target, options) {
+                if (target && target.nodeType === 1) {
+                    originalObserve.call(this, target, options);
+                } else {
+                    console.warn('Prevented ResizeObserver error with invalid target');
+                }
+            };
+            console.log('ResizeObserver patched for GSAP');
+        }
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'cuevas_fix_resize_observer', 1); // Very early in footer 
+
+/**
+ * Add section transforms to the footer
+ */
+function cuevas_section_transforms() {
+    if (!is_front_page()) {
+        return;
+    }
+    ?>
+    <script>
+    // Auto-convert main sections to fullscreen sections
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find main homepage sections
+        const mainSections = [
+            document.querySelector('.hero-section'),
+            document.querySelector('.featured-section'),
+            document.querySelector('.categories-section'),
+            document.querySelector('.about-section'),
+            document.querySelector('.testimonials-section')
+        ].filter(section => section !== null);
+        
+        // Add fullscreen-section class to each
+        mainSections.forEach(section => {
+            if (!section.classList.contains('fullscreen-section')) {
+                section.classList.add('fullscreen-section');
+                console.log('Section converted to fullscreen:', section.className);
+            }
+        });
+        
+        // Wrap main content in smooth wrapper if not already wrapped
+        if (!document.querySelector('.smooth-wrapper')) {
+            const main = document.querySelector('main');
+            if (main) {
+                // Wrap main content in smooth wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'smooth-wrapper';
+                // Get the parent of main
+                const parent = main.parentNode;
+                // Insert wrapper before main
+                parent.insertBefore(wrapper, main);
+                // Move main inside wrapper
+                wrapper.appendChild(main);
+                console.log('Main content wrapped for smooth scrolling');
+            }
+        }
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'cuevas_section_transforms', 20); 
