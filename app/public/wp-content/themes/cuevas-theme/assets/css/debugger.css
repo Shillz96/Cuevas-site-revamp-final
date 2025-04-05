@@ -1,0 +1,169 @@
+/**
+ * GSAP Debugger Styles
+ * Used for testing GSAP scroll animations
+ */
+
+/* Reset section heights for testing */
+.fullpage-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.section {
+  min-height: 100vh;
+  padding: 80px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Hero section style */
+.hero-section {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.scroll-indicator {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scroll-indicator i {
+  margin-top: 8px;
+  font-size: 20px;
+}
+
+/* Test sections */
+#section1 {
+  background-color: #f5f5f5;
+}
+
+#section2 {
+  background-color: #e9e9e9;
+}
+
+#section3 {
+  background-color: #d9d9d9;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.test-elements {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.test-card {
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin: 10px;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+}
+
+/* Navigation styles */
+.nav-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.nav-dot.active {
+  background-color: #007bff;
+  transform: scale(1.2);
+}
+
+.fixed-nav-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.fixed-nav-btn[aria-disabled="true"] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Debug Output */
+#debug-output {
+  text-align: left;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .test-card {
+    width: calc(50% - 20px);
+  }
+} 

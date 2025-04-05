@@ -11,14 +11,63 @@ $hero_settings = array(
     'subheading' => get_theme_mod('homepage_banner_subheading', 'Quality western wear for the modern cowboy and cowgirl')
 );
 
-// Get featured product images from customizer
-$featured_images = array();
-for ($i = 1; $i <= 5; $i++) {
-    $image = get_theme_mod('featured_product_image_' . $i);
-    if ($image) {
-        $featured_images[] = $image;
+// Get gallery images from featured products
+$gallery_images = array();
+$featured_products_query = new WP_Query(array(
+    'post_type' => 'product',
+    'posts_per_page' => 6,
+    'meta_key' => '_featured',
+    'meta_value' => 'yes'
+));
+
+if ($featured_products_query->have_posts()) {
+    while ($featured_products_query->have_posts()) {
+        $featured_products_query->the_post();
+        $product = wc_get_product(get_the_ID());
+        
+        // Get product gallery images
+        $attachment_ids = $product->get_gallery_image_ids();
+        
+        // Add featured image first if exists
+        if (has_post_thumbnail()) {
+            $gallery_images[] = array(
+                'url' => get_the_post_thumbnail_url(get_the_ID(), 'large'),
+                'title' => get_the_title(),
+                'link' => get_permalink()
+            );
+        }
+        
+        // Add gallery images
+        foreach ($attachment_ids as $attachment_id) {
+            $gallery_images[] = array(
+                'url' => wp_get_attachment_image_url($attachment_id, 'large'),
+                'title' => get_the_title(),
+                'link' => get_permalink()
+            );
+        }
+        
+        // Limit to 6 images total
+        if (count($gallery_images) >= 6) {
+            break;
+        }
     }
+    wp_reset_postdata();
 }
+
+// Get featured products for products section
+$featured_products = new WP_Query(array(
+    'post_type' => 'product',
+    'posts_per_page' => 4,
+    'meta_key' => '_featured',
+    'meta_value' => 'yes'
+));
+
+// Get product categories
+$product_categories = get_terms(array(
+    'taxonomy' => 'product_cat',
+    'hide_empty' => true,
+    'parent' => 0
+));
 ?>
 
 <style>
@@ -26,74 +75,75 @@ for ($i = 1; $i <= 5; $i++) {
 html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
-}
-
-body {
-    overflow: hidden; /* Hide scrollbars initially */
-}
-
-.fullpage-wrapper {
-    width: 100%;
     height: 100%;
+    overflow: hidden;
+}
+
+.sections-container {
+    height: 100vh;
+    overflow: hidden;
     position: relative;
 }
 
 .section {
-    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100vh;
-    position: relative;
     overflow: hidden;
+    will-change: transform;
+}
+
+/* Section-specific styles */
+#home {
+    background-color: #1a1a1a;
+    color: white;
+    z-index: 1;
+}
+
+#gallery {
+    background-color: #2a2a2a;
+    color: white;
+    z-index: 2;
+}
+
+#products {
+    background-color: #3a3a3a;
+    color: white;
+    z-index: 3;
+}
+
+#categories {
+    background-color: #4a4a4a;
+    color: white;
+    z-index: 4;
+}
+
+.section-content {
+    position: relative;
+    z-index: 5;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-size: cover;
-    background-position: center;
 }
 
-/* Hero section styles */
-.hero-section {
-    background-color: #333;
-    color: white;
-    text-align: center;
-}
-
-.hero-content {
-    max-width: 80%;
-    z-index: 2;
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    opacity: 0;
-}
-
-.hero-subtitle {
-    font-size: 1.5rem;
-    opacity: 0;
-}
-
-.scroll-indicator {
+.home-bg {
     position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    text-align: center;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.scroll-arrow {
-    display: block;
-    width: 30px;
-    height: 30px;
-    margin: 10px auto;
-    background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/down-arrow.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
 
 /* Navigation dots */
@@ -116,8 +166,8 @@ body {
 }
 
 .section-nav button {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.7);
     background: transparent;
@@ -131,206 +181,309 @@ body {
     transform: scale(1.2);
 }
 
-/* Fixed navigation arrows */
-.fixed-nav-btn {
-    position: fixed;
-    right: 30px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    transition: background 0.3s ease;
+/* Section content styles */
+.section h2 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-.fixed-nav-btn:hover {
-    background: rgba(255,255,255,0.4);
+.section p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.fixed-nav-btn.prev {
-    top: 30px;
+/* Gallery Grid */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    padding: 20px;
 }
 
-.fixed-nav-btn.next {
-    bottom: 30px;
+.gallery-item {
+    position: relative;
+    display: block;
+    text-decoration: none;
 }
 
-/* Featured slider */
-.slider-container {
+.gallery-item img {
     width: 100%;
     height: 100%;
-    position: relative;
-    overflow: hidden;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-.slide {
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-title {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.gallery-view {
+    color: #ffd700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.gallery-empty p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.product-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.product-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    font-size: 1.25rem;
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+/* Categories Grid */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.category-card {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.category-card img {
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-position: center;
+    object-fit: cover;
+}
+
+.category-card .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: background-color 0.3s ease;
 }
 
-.slide.active {
-    opacity: 1;
-    transform: scale(1);
-    z-index: 1;
+.category-card:hover .overlay {
+    background: rgba(0, 0, 0, 0.7);
 }
 
-.slide-number {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    font-size: 2rem;
+.category-card h3 {
     color: white;
-    font-weight: bold;
+    font-size: 2rem;
+    text-transform: uppercase;
 }
 
-.slider-nav {
-    position: absolute;
-    bottom: 30px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    z-index: 2;
-}
-
-.slider-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    margin: 0 5px;
-    cursor: pointer;
+.btn {
+    display: inline-block;
+    padding: 15px 30px;
+    background: #ffd700;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
     transition: all 0.3s ease;
+    margin-top: 20px;
 }
 
-.slider-dot.active {
-    background: white;
-    transform: scale(1.2);
-}
-
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    .slide, .slide.active,
-    .section-nav button, .section-nav button.active,
-    .slider-dot, .slider-dot.active,
-    .scroll-arrow {
-        transition: none !important;
-        animation: none !important;
-        transform: none !important;
-    }
-}
-
-/* Screen reader only */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+.btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
 }
 </style>
 
-<div id="smooth-wrapper">
-    <div id="smooth-content">
-        <script>console.log("Smooth wrapper initialized");</script>
-        <!-- Main wrapper - add accessibility improvements -->
-        <div class="fullpage-wrapper" role="main">
-            <!-- Section 1: Home/Hero -->
-            <section id="home" class="section hero-section" 
-                <?php if($hero_settings['banner_image']): ?>
-                    style="background-image: url('<?php echo esc_url($hero_settings['banner_image']); ?>');"
-                <?php endif; ?>
-                data-section="0" role="region" aria-label="Home">
-                <div class="hero-content">
-                    <h1 class="hero-title"><?php echo esc_html($hero_settings['heading']); ?></h1>
-                    <p class="hero-subtitle"><?php echo esc_html($hero_settings['subheading']); ?></p>
-                </div>
-                <div class="scroll-indicator" role="button" tabindex="0" aria-label="Scroll to next section">
-                    <span>Scroll Down</span>
-                    <span class="scroll-arrow" aria-hidden="true"></span>
-                </div>
-            </section>
-
-            <!-- Section 2: Gallery -->
-            <?php if (!empty($featured_images)): ?>
-            <section id="gallery" class="section gallery-section" data-section="1" role="region" aria-label="Gallery">
-                <div class="slider-container" role="region" aria-roledescription="carousel" aria-label="Featured Images">
-                    <?php foreach ($featured_images as $index => $image): ?>
-                        <div class="slide <?php echo ($index === 0) ? 'active' : ''; ?>" 
-                            style="background-image: url('<?php echo esc_url($image); ?>');"
-                            role="group" aria-roledescription="slide" 
-                            aria-label="Slide <?php echo $index + 1; ?> of <?php echo count($featured_images); ?>" 
-                            aria-hidden="<?php echo ($index === 0) ? 'false' : 'true'; ?>">
-                            <div class="slide-number" aria-hidden="true"><?php echo sprintf('%02d', $index + 1); ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                    
-                    <div class="slider-nav" role="tablist" aria-label="Gallery navigation">
-                        <?php foreach ($featured_images as $index => $image): ?>
-                            <div class="slider-dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
-                                data-index="<?php echo $index; ?>"
-                                role="tab" tabindex="<?php echo ($index === 0) ? '0' : '-1'; ?>"
-                                aria-label="Go to slide <?php echo $index + 1; ?>"
-                                aria-selected="<?php echo ($index === 0) ? 'true' : 'false'; ?>"></div>
-                    <?php endforeach; ?>
-                </div>
-                </div>
-            </section>
-            <?php endif; ?>
-
-            <!-- Section 3: Products -->
-            <section id="products" class="section products-section" data-section="2" role="region" aria-label="Featured Products">
-                <?php get_template_part('template-parts/home/featured-products'); ?>
-            </section>
-            
-            <!-- Section 4: Shop By Category -->
-            <section id="shop" class="section shop-section" data-section="3" role="region" aria-label="Shop By Category">
-            <?php get_template_part('template-parts/home/promo-banner'); ?>
-            </section>
+<!-- Main container for all sections -->
+<div class="sections-container">
+    <!-- Home Section -->
+    <section id="home" class="section active" data-section="0">
+        <?php if ($hero_settings['banner_image']): ?>
+            <img src="<?php echo esc_url($hero_settings['banner_image']); ?>" alt="" class="home-bg">
+        <?php endif; ?>
+        <div class="section-content">
+            <h2><?php echo esc_html($hero_settings['heading']); ?></h2>
+            <p><?php echo esc_html($hero_settings['subheading']); ?></p>
+            <a href="<?php echo esc_url(get_permalink(get_option('woocommerce_shop_page_id'))); ?>" class="btn">Shop Now</a>
         </div>
+    </section>
 
-        <!-- Section navigation - add accessibility improvements -->
-        <nav class="section-nav" role="navigation" aria-label="Page sections">
-            <ul>
-                <li><button class="nav-dot active" data-section="0" aria-label="Navigate to Home section" aria-current="true"></button></li>
-                <li><button class="nav-dot" data-section="1" aria-label="Navigate to Gallery section" aria-current="false"></button></li>
-                <li><button class="nav-dot" data-section="2" aria-label="Navigate to Products section" aria-current="false"></button></li>
-                <li><button class="nav-dot" data-section="3" aria-label="Navigate to Shop By Category section" aria-current="false"></button></li>
-            </ul>
-        </nav>
+    <!-- Gallery Section -->
+    <section id="gallery" class="section" data-section="1">
+        <div class="section-content">
+            <h2>Our Gallery</h2>
+            <p>Take a look at our latest collection and customer highlights</p>
+            <div class="gallery-grid">
+                <?php 
+                if (!empty($gallery_images)):
+                    foreach ($gallery_images as $image): 
+                ?>
+                    <a href="<?php echo esc_url($image['link']); ?>" class="gallery-item">
+                        <img src="<?php echo esc_url($image['url']); ?>" alt="<?php echo esc_attr($image['title']); ?>">
+                        <div class="gallery-overlay">
+                            <span class="gallery-title"><?php echo esc_html($image['title']); ?></span>
+                            <span class="gallery-view">View Product</span>
+                        </div>
+                    </a>
+                <?php 
+                    endforeach;
+                else:
+                ?>
+                    <div class="gallery-empty">
+                        <p>No gallery images available</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
 
-        <!-- Fixed navigation buttons - add accessibility improvements -->
-        <button class="fixed-nav-btn prev" aria-label="Navigate to previous section"><i class="fas fa-chevron-up" aria-hidden="true"></i></button>
-        <button class="fixed-nav-btn next" aria-label="Navigate to next section"><i class="fas fa-chevron-down" aria-hidden="true"></i></button>
+    <!-- Products Section -->
+    <section id="products" class="section" data-section="2">
+        <div class="section-content">
+            <h2>Featured Products</h2>
+            <p>Check out our most popular western wear</p>
+            <div class="products-grid">
+                <?php
+                if ($featured_products->have_posts()):
+                    while ($featured_products->have_posts()): $featured_products->the_post();
+                        global $product;
+                ?>
+                    <div class="product-card">
+                        <?php if (has_post_thumbnail()): ?>
+                            <img src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large'); ?>" alt="<?php the_title(); ?>">
+                        <?php endif; ?>
+                        <h3><?php the_title(); ?></h3>
+                        <div class="price"><?php echo $product->get_price_html(); ?></div>
+                        <a href="<?php the_permalink(); ?>" class="btn">View Product</a>
+                    </div>
+                <?php
+                    endwhile;
+                    wp_reset_postdata();
+                endif;
+                ?>
+            </div>
+        </div>
+    </section>
 
-        <!-- Screen reader announcements -->
-        <div id="section-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-        <div id="slide-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-    </div>
+    <!-- Categories Section -->
+    <section id="categories" class="section" data-section="3">
+        <div class="section-content">
+            <h2>Shop Categories</h2>
+            <p>Find exactly what you're looking for</p>
+            <div class="categories-grid">
+                <?php
+                if (!empty($product_categories)):
+                    foreach ($product_categories as $category):
+                        $thumbnail_id = get_term_meta($category->term_id, 'thumbnail_id', true);
+                        $image = wp_get_attachment_url($thumbnail_id);
+                ?>
+                    <a href="<?php echo get_term_link($category); ?>" class="category-card">
+                        <?php if ($image): ?>
+                            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($category->name); ?>">
+                        <?php endif; ?>
+                        <div class="overlay">
+                            <h3><?php echo esc_html($category->name); ?></h3>
+                        </div>
+                    </a>
+                <?php
+                    endforeach;
+                endif;
+                ?>
+            </div>
+        </div>
+    </section>
 </div>
 
-<?php
-// Don't include footer as it would break the fullpage layout
-?>
+<!-- Navigation Dots -->
+<nav class="section-nav">
+    <ul>
+        <li><button data-section="0" class="active" aria-label="Home Section">Home</button></li>
+        <li><button data-section="1" aria-label="Gallery Section">Gallery</button></li>
+        <li><button data-section="2" aria-label="Products Section">Products</button></li>
+        <li><button data-section="3" aria-label="Categories Section">Categories</button></li>
+    </ul>
+</nav>
+
+<?php get_footer(); ?>

@@ -149,23 +149,11 @@ function cuevas_theme_scripts() {
 	// Google Fonts
 	wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap', array(), '1.0.0');
 	
-	// Add the observer fixes very early to prevent errors
-    wp_enqueue_script(
-        'cuevas-observers-fix',
-        get_template_directory_uri() . '/js/fix-observers.js',
-        array(), // No dependencies to ensure it loads early
-        null,    // No version
-        false    // Load in header
-    );
-	
 	// jQuery
 	wp_enqueue_script('jquery');
 	
-	// Lenis Smooth Scrolling - enqueued before GSAP
-	wp_enqueue_script('lenis-smooth-scroll', 'https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.27/dist/lenis.min.js', array(), '1.0.27', true);
-	
 	// GSAP Core - from CDN for better performance
-	wp_enqueue_script('gsap-core', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array('lenis-smooth-scroll'), '3.12.7', true);
+	wp_enqueue_script('gsap-core', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js', array(), '3.12.7', true);
 	
 	// GSAP ScrollTrigger
 	wp_enqueue_script('gsap-scrolltrigger', 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js', array('gsap-core'), '3.12.7', true);
@@ -185,7 +173,7 @@ function cuevas_theme_scripts() {
     }
 
     if (is_front_page()) {
-        wp_enqueue_script('cuevas-home-animations', get_template_directory_uri() . '/assets/js/home-animations.js', array('jquery', 'gsap-core', 'gsap-scrolltrigger', 'gsap-scrollto', 'lenis-smooth-scroll'), '1.0.0', true);
+        wp_enqueue_script('cuevas-home-animations', get_template_directory_uri() . '/assets/js/home-animations.js', array('jquery', 'gsap-core', 'gsap-scrolltrigger', 'gsap-scrollto'), '1.0.0', true);
         wp_enqueue_script('cuevas-hero-customizer', get_template_directory_uri() . '/assets/js/hero-customizer.js', array('gsap-core'), _S_VERSION, true);
     }
 
@@ -1137,103 +1125,10 @@ function cuevas_add_home_page_inline_styles() {
     .no-js .fullpage-wrapper {
         opacity: 1;
     }
-    
-    /* Fullscreen Section Layout */
-    .fullscreen-section {
-        min-height: 100vh;
-        width: 100%;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 80px 0;
-        box-sizing: border-box;
-    }
-    
-    /* Section Navigation Dots */
-    .section-nav-dots {
-        position: fixed;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 100;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .nav-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.5);
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .nav-dot.active {
-        background: #ffffff;
-        transform: scale(1.3);
-    }
-    
-    /* Smooth Scroll Wrapper */
-    .smooth-wrapper {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-    }
-    
-    /* Media Queries */
-    @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.2rem;
-        }
-        
-        .section-nav-dots {
-            right: 10px;
-        }
-        
-        .nav-dot {
-            width: 10px;
-            height: 10px;
-        }
-    }
     </style>
     <script>
-    // Fix for MutationObserver error
+    // Initialize on DOMContentLoaded 
     document.addEventListener('DOMContentLoaded', function() {
-        // Fix for MutationObserver error
-        if (typeof MutationObserver !== 'undefined') {
-            const originalMutationObserve = MutationObserver.prototype.observe;
-            MutationObserver.prototype.observe = function(target, options) {
-                if (target && target.nodeType === 1) {
-                    originalMutationObserve.call(this, target, options);
-                } else {
-                    console.warn('Prevented MutationObserver error with invalid target');
-                }
-            };
-            console.log('MutationObserver patched');
-        }
-        
-        // Fix for ResizeObserver error
-        if (typeof ResizeObserver !== 'undefined') {
-            const originalResizeObserve = ResizeObserver.prototype.observe;
-            ResizeObserver.prototype.observe = function(target, options) {
-                if (target && target.nodeType === 1) {
-                    originalResizeObserve.call(this, target, options);
-                } else {
-                    console.warn('Prevented ResizeObserver error with invalid target');
-                }
-            };
-            console.log('ResizeObserver patched');
-        }
-        
         // Check if GSAP is available
         if (typeof gsap !== 'undefined') {
             console.log('GSAP found in early initialization');
@@ -1249,120 +1144,6 @@ function cuevas_add_home_page_inline_styles() {
             }
         } else {
             console.error('GSAP not found! Check script loading.');
-        }
-        
-        // Fix fullscreen sections
-        const sections = document.querySelectorAll('.fullscreen-section');
-        if (sections.length > 0) {
-            console.log('Found fullscreen sections:', sections.length);
-            
-            // Set each section to full viewport height
-            sections.forEach(section => {
-                section.style.minHeight = '100vh';
-                section.style.width = '100%';
-                section.style.position = 'relative';
-            });
-            
-            // Initialize Lenis smooth scroll if available
-            if (window.Lenis) {
-                console.log('Initializing Lenis for smooth scrolling');
-                const lenis = new Lenis({
-                    duration: 1.2,
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                    orientation: 'vertical',
-                    gestureOrientation: 'vertical',
-                    smoothWheel: true,
-                    smoothTouch: false,
-                    wheelMultiplier: 1,
-                    touchMultiplier: 2
-                });
-                
-                // Add scrolling functions
-                const scrollToSection = (index) => {
-                    if (sections[index]) {
-                        const top = sections[index].offsetTop;
-                        if (window.gsap && window.ScrollToPlugin) {
-                            gsap.to(window, {
-                                duration: 1, 
-                                scrollTo: {y: top, autoKill: false},
-                                ease: 'power2.inOut'
-                            });
-                        } else {
-                            lenis.scrollTo(top, {duration: 1.2});
-                        }
-                    }
-                };
-                
-                // Add navigation dots if they don't exist
-                if (!document.querySelector('.section-nav-dots')) {
-                    const navDots = document.createElement('div');
-                    navDots.className = 'section-nav-dots';
-                    navDots.style.cssText = `
-                        position: fixed;
-                        right: 20px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        z-index: 100;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 10px;
-                    `;
-                    
-                    sections.forEach((section, index) => {
-                        const dot = document.createElement('button');
-                        dot.className = 'nav-dot';
-                        dot.setAttribute('aria-label', `Scroll to section ${index + 1}`);
-                        dot.style.cssText = `
-                            width: 12px;
-                            height: 12px;
-                            border-radius: 50%;
-                            background: rgba(255,255,255,0.5);
-                            border: none;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                        `;
-                        dot.addEventListener('click', () => scrollToSection(index));
-                        navDots.appendChild(dot);
-                    });
-                    
-                    document.body.appendChild(navDots);
-                }
-                
-                // Integrate with GSAP ScrollTrigger if available
-                if (window.gsap && window.ScrollTrigger) {
-                    sections.forEach((section, index) => {
-                        ScrollTrigger.create({
-                            trigger: section,
-                            start: 'top center',
-                            end: 'bottom center',
-                            onEnter: () => highlightDot(index),
-                            onEnterBack: () => highlightDot(index)
-                        });
-                    });
-                    
-                    function highlightDot(index) {
-                        const dots = document.querySelectorAll('.nav-dot');
-                        dots.forEach((dot, i) => {
-                            if (i === index) {
-                                dot.style.background = '#ffffff';
-                                dot.style.transform = 'scale(1.3)';
-                            } else {
-                                dot.style.background = 'rgba(255,255,255,0.5)';
-                                dot.style.transform = 'scale(1)';
-                            }
-                        });
-                    }
-                }
-                
-                // Connect lenis to requestAnimationFrame
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
-                requestAnimationFrame(raf);
-                
-                console.log('Fullscreen sections initialized with smooth scrolling');
-            }
         }
     });
     
@@ -1385,77 +1166,12 @@ function cuevas_add_home_page_inline_styles() {
 }
 add_action('wp_head', 'cuevas_add_home_page_inline_styles', 5); // Higher priority for earlier loading 
 
-/**
- * Fix ResizeObserver errors in console
- */
-function cuevas_fix_resize_observer() {
-    ?>
-    <script>
-    // MonkeyPatch ResizeObserver to prevent errors with invalid nodes
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof ResizeObserver !== 'undefined') {
-            const originalObserve = ResizeObserver.prototype.observe;
-            ResizeObserver.prototype.observe = function(target, options) {
-                if (target && target.nodeType === 1) {
-                    originalObserve.call(this, target, options);
-                } else {
-                    console.warn('Prevented ResizeObserver error with invalid target');
-                }
-            };
-            console.log('ResizeObserver patched for GSAP');
-        }
-    });
-    </script>
-    <?php
+// Register WP-CLI commands if WP-CLI is available
+if (defined('WP_CLI') && WP_CLI) {
+    require_once get_template_directory() . '/cli/add-mock-products.php';
 }
-add_action('wp_footer', 'cuevas_fix_resize_observer', 1); // Very early in footer 
 
-/**
- * Add section transforms to the footer
- */
-function cuevas_section_transforms() {
-    if (!is_front_page()) {
-        return;
-    }
-    ?>
-    <script>
-    // Auto-convert main sections to fullscreen sections
-    document.addEventListener('DOMContentLoaded', function() {
-        // Find main homepage sections
-        const mainSections = [
-            document.querySelector('.hero-section'),
-            document.querySelector('.featured-section'),
-            document.querySelector('.categories-section'),
-            document.querySelector('.about-section'),
-            document.querySelector('.testimonials-section')
-        ].filter(section => section !== null);
-        
-        // Add fullscreen-section class to each
-        mainSections.forEach(section => {
-            if (!section.classList.contains('fullscreen-section')) {
-                section.classList.add('fullscreen-section');
-                console.log('Section converted to fullscreen:', section.className);
-            }
-        });
-        
-        // Wrap main content in smooth wrapper if not already wrapped
-        if (!document.querySelector('.smooth-wrapper')) {
-            const main = document.querySelector('main');
-            if (main) {
-                // Wrap main content in smooth wrapper
-                const wrapper = document.createElement('div');
-                wrapper.className = 'smooth-wrapper';
-                // Get the parent of main
-                const parent = main.parentNode;
-                // Insert wrapper before main
-                parent.insertBefore(wrapper, main);
-                // Move main inside wrapper
-                wrapper.appendChild(main);
-                console.log('Main content wrapped for smooth scrolling');
-            }
-        }
-    });
-    </script>
-    <?php
-}
-add_action('wp_footer', 'cuevas_section_transforms', 20); 
+// Register WP-CLI commands
+if (defined('WP_CLI') && WP_CLI) {
+    require_once get_template_directory() . '/wp-cli-commands.php';
+} 
