@@ -1,4 +1,4 @@
-# Project Name
+# Cuevas Western Wear Theme
 
 ## Introduction
 This project is a custom WordPress theme with a western-inspired design, featuring full-width pages, a hamburger menu, and GSAP-powered animations for a seamless user experience.
@@ -21,10 +21,29 @@ This project is a custom WordPress theme with a western-inspired design, featuri
    - Use the WordPress Customizer (Appearance > Customize) to set the hero image and gallery images for the home page.  
    - Install and configure WooCommerce for shop-related pages (Plugins > Add New > WooCommerce).
 
-## Usage
+## Documentation
+
+### Global Rules and Structure
+- [Global Rules](global-rules.md) - Colors, layout, hamburger menu, and cursor styles
+- [Structure](Structure.md) - File and directory structure
+- [Best Practices](Best%20Practices.md) - Coding standards and best practices
+- [Troubleshooting](Troubleshooting.md) - Solutions to common issues
+
+### Templates
+- [Home Page](home.md) - Full-width home page with GSAP animations
+- [Shop Page](shop.md) - WooCommerce shop template
+- [Product Page](product.md) - Single product display
+- [Cart Page](cart.md) - Shopping cart layout
+- [Hamburger Menu](hamburger-menu.md) - Global navigation menu
+
+### Development
+- [Plan](Plan.md) - Development plan and milestones
+- [Overview](Overview.md) - Project goals and features
+- [Rules](Rules.md) - Project rules for consistent coding
+
+## Features
 - **Home Page**: Features a hero section, gallery slideshow, featured products in a 2x3 grid, and shop call-to-action buttons.  
 - **Shop Page**: Displays WooCommerce products in a full-width grid layout.  
 - **Product Page**: Shows individual product details with subtle GSAP animations.  
-- **Cart Page**: Full-width cart display with checkout options.  
-
-For detailed information on each component, refer to the [Structure](Structure.md) and [Plan](Plan.md) documents. 
+- **Cart Page**: Full-width cart display with checkout options. 
+- **Hamburger Menu**: Consistent global navigation across all pages. 
