@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Register ScrollTrigger plugin if available
+    if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+    } else {
+        console.warn('ScrollTrigger plugin not available, some animations may not work');
+    }
+    
     // Define createTextReveal globally if it doesn't exist
     if (typeof window.createTextReveal === 'undefined') {
         window.createTextReveal = function(element, options = {}) {
@@ -132,17 +139,21 @@ function initializeHeaderAnimations() {
         
         // Header scroll animation - only if ScrollTrigger exists
         if (typeof ScrollTrigger !== 'undefined') {
-            ScrollTrigger.create({
-                start: 'top -100',
-                onUpdate: (self) => {
-                    const scrolled = self.getVelocity() > 0;
-                    gsap.to(header, {
-                        yPercent: scrolled ? -100 : 0,
-                        duration: 0.3,
-                        ease: 'power3.out'
-                    });
-                }
-            });
+            try {
+                ScrollTrigger.create({
+                    start: 'top -100',
+                    onUpdate: (self) => {
+                        const scrolled = self.getVelocity() > 0;
+                        gsap.to(header, {
+                            yPercent: scrolled ? -100 : 0,
+                            duration: 0.3,
+                            ease: 'power3.out'
+                        });
+                    }
+                });
+            } catch (scrollTriggerError) {
+                console.warn('Error initializing header scroll animation:', scrollTriggerError);
+            }
         }
 
         // Initial header animation
@@ -248,15 +259,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             duration: 1,
                             scrollTo: {
                                 y: target,
-                                offsetY: 100
+                                offsetY: 50
                             },
-                            ease: 'power3.inOut'
+                            ease: 'power2.inOut'
                         });
                     } else {
-                        // Fallback to native smooth scroll
-                        target.scrollIntoView({ 
-                            behavior: 'smooth',
-                            block: 'start'
+                        // Fallback to native scroll
+                        const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 50;
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
                         });
                     }
                 }

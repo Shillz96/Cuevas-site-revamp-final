@@ -146,12 +146,26 @@ function cuevas_scripts() {
 	// Font Awesome for icons
 	wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', array(), '5.15.4' );
 	
+	// Slick Slider
+	wp_enqueue_style( 'slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css', array(), '1.8.1' );
+	wp_enqueue_script( 'slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array('jquery'), '1.8.1', true );
+	
 	// GSAP for animations
-	wp_enqueue_script( 'gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js', array(), '3.9.1', true );
-	wp_enqueue_script( 'gsap-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js', array('gsap'), '3.9.1', true );
+	wp_enqueue_script( 'gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js', array(), '3.11.5', true );
+	wp_enqueue_script( 'gsap-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js', array('gsap'), '3.11.5', true );
+	
+	// Optional GSAP ScrollToPlugin for smooth scrolling
+	wp_enqueue_script( 'gsap-scroll-to', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollToPlugin.min.js', array('gsap'), '3.11.5', true );
 	
 	wp_enqueue_script( 'cuevas-navigation', get_template_directory_uri() . '/assets/js/navigation.js', array(), CUEVAS_VERSION, true );
-	wp_enqueue_script( 'cuevas-animations', get_template_directory_uri() . '/assets/js/animations.js', array('gsap', 'gsap-scroll-trigger'), CUEVAS_VERSION, true );
+	wp_enqueue_script( 'cuevas-animations', get_template_directory_uri() . '/assets/js/animations.js', array('gsap', 'gsap-scroll-trigger', 'gsap-scroll-to'), CUEVAS_VERSION, true );
+
+	// Specific scripts for homepage
+	if ( is_front_page() ) {
+		wp_enqueue_style( 'cuevas-slideshow', get_template_directory_uri() . '/assets/css/split-slideshow.css', array(), CUEVAS_VERSION );
+		wp_enqueue_style( 'cuevas-homepage', get_template_directory_uri() . '/assets/css/homepage.css', array(), CUEVAS_VERSION );
+		wp_enqueue_script( 'cuevas-slideshow', get_template_directory_uri() . '/assets/js/split-slideshow.js', array('jquery', 'slick'), CUEVAS_VERSION, true );
+	}
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -159,12 +173,12 @@ function cuevas_scripts() {
 	
 	// Load product page specific scripts only on product pages
 	if ( is_product() ) {
-		wp_enqueue_script( 'cuevas-product', get_template_directory_uri() . '/assets/js/product-page.js', array('jquery'), CUEVAS_VERSION, true );
+		wp_enqueue_script( 'cuevas-product', get_template_directory_uri() . '/assets/js/product-page.js', array('jquery', 'gsap'), CUEVAS_VERSION, true );
 	}
 	
 	// Load about page specific scripts only on about page
 	if ( is_page('about') || is_page('about-us') ) {
-		wp_enqueue_script( 'cuevas-about', get_template_directory_uri() . '/assets/js/about-animations.js', array('gsap'), CUEVAS_VERSION, true );
+		wp_enqueue_script( 'cuevas-about', get_template_directory_uri() . '/assets/js/about-animations.js', array('gsap', 'gsap-scroll-trigger'), CUEVAS_VERSION, true );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'cuevas_scripts' );
@@ -177,4 +191,67 @@ require get_template_directory() . '/inc/template-tags.php';
 // Check if WooCommerce is active
 if ( class_exists( 'WooCommerce' ) ) {
 	require get_template_directory() . '/inc/woocommerce.php';
-} 
+}
+
+/**
+ * Add debugging functionality
+ */
+function cuevas_debug_log($message) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[Cuevas Theme] ' . $message);
+        
+        if (is_admin() || current_user_can('administrator')) {
+            // Only show to admins
+            echo '<script>console.log("[Cuevas Theme] ' . esc_js($message) . '");</script>';
+        }
+    }
+}
+
+/**
+ * Debug template usage
+ */
+function cuevas_debug_template() {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        global $template;
+        cuevas_debug_log('Template file: ' . basename($template));
+        
+        // Add detailed template hierarchy info
+        $templates = array();
+        
+        if (is_front_page()) {
+            $templates[] = 'front-page.php';
+        }
+        
+        if (is_home()) {
+            $templates[] = 'home.php';
+        }
+        
+        if (is_singular()) {
+            $templates[] = 'single-' . get_post_type() . '.php';
+            $templates[] = 'singular.php';
+            $templates[] = 'single.php';
+        }
+        
+        if (is_page()) {
+            $id = get_queried_object_id();
+            $template = get_page_template_slug();
+            $pagename = get_query_var('pagename');
+            
+            if ($template) {
+                $templates[] = $template;
+            }
+            
+            if ($pagename) {
+                $templates[] = "page-$pagename.php";
+            }
+            
+            $templates[] = "page-$id.php";
+            $templates[] = 'page.php';
+        }
+        
+        $templates[] = 'index.php';
+        
+        cuevas_debug_log('Template hierarchy: ' . implode(' → ', $templates));
+    }
+}
+add_action('wp_footer', 'cuevas_debug_template'); 

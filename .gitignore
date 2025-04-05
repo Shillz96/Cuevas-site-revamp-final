@@ -12,6 +12,11 @@
 !app/public/wp-content/themes/cuevas-theme/
 !app/public/wp-content/themes/cuevas-theme/**
 
+# Ensure specific directories and files are not ignored
+!app/public/wp-content/themes/cuevas-theme/inc/
+!app/public/wp-content/themes/cuevas-theme/inc/**
+!app/public/wp-content/themes/cuevas-theme/inc/woocommerce.php
+
 # Still ignore these within the allowed folder
 app/public/wp-content/themes/cuevas-theme/**/.DS_Store
 app/public/wp-content/themes/cuevas-theme/**/*.log
