@@ -138,18 +138,4 @@ function initializeAboutPageAnimations() {
 /**
  * Utility function to create timeline connector animations
  */
-function animateTimelineConnectors() {
-    const connectors = document.querySelectorAll('.timeline-connector');
-    connectors.forEach(connector => {
-        gsap.from(connector, {
-            scaleY: 0,
-            transformOrigin: 'top',
-            duration: 1,
-            scrollTrigger: {
-                trigger: connector,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse'
-            }
-        });
-    });
-} 
+// Removed animateTimelineConnectors function as it was unused 

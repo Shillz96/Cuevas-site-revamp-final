@@ -87,6 +87,52 @@ if (defined('WP_DEBUG') && WP_DEBUG) :
 <script>
 console.log('Front page template loaded successfully');
 console.log('Template Parts Path:', '<?php echo esc_js(get_template_directory() . '/template-parts'); ?>');
+
+// Fix for any MutationObserver issues in other scripts
+document.addEventListener('DOMContentLoaded', function() {
+    // Define the safe observer creator function locally
+    function createSafeObserver(target, config, callback) {
+        if (!target || !callback || typeof MutationObserver === 'undefined') return null;
+        
+        try {
+            // If target is a selector string, query for the element
+            if (typeof target === 'string') {
+                const element = document.querySelector(target);
+                if (!element) {
+                    console.warn(`Target element "${target}" not found for MutationObserver`);
+                    return null;
+                }
+                target = element;
+            }
+            
+            // Ensure target is a valid DOM Node
+            if (!(target instanceof Node)) {
+                console.warn('MutationObserver target must be a valid DOM Node');
+                return null;
+            }
+            
+            const observer = new MutationObserver(callback);
+            observer.observe(target, config || { childList: true, subtree: true });
+            return observer;
+        } catch (error) {
+            console.error('Error creating MutationObserver:', error);
+            return null;
+        }
+    };
+    
+    // Make it globally available if other scripts *might* need it on this page, 
+    // but keep it scoped to this page load.
+    window.createSafeObserver = createSafeObserver;
+
+    // Initialize homepage ScrollTrigger if available
+    if (typeof ScrollTrigger !== 'undefined') {
+        console.log('Initializing ScrollTrigger...');
+        // Register the plugin if not already registered
+        if (typeof gsap !== 'undefined' && typeof gsap.registerPlugin === 'function') {
+            gsap.registerPlugin(ScrollTrigger);
+        }
+    }
+});
 </script>
 <?php endif; ?>
 

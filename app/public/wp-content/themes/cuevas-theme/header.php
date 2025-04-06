@@ -5,6 +5,20 @@
  * @package CuevasWesternWear
  */
 
+// Get navigation customizer settings
+$nav_bg_color = get_theme_mod('cuevas_nav_bg_color', '#3E2723');
+$nav_text_color = get_theme_mod('cuevas_nav_text_color', '#FFFFFF');
+$nav_transparent = get_theme_mod('cuevas_nav_transparent', true);
+
+// Set the header class based on whether we want transparency on homepage
+$header_class = 'site-header';
+if (is_front_page() && $nav_transparent) {
+    $header_class .= ' transparent-header';
+}
+if (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) {
+    $header_class = 'compact-header';
+}
+
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -13,6 +27,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="profile" href="https://gmpg.org/xfn/11">
     <?php wp_head(); ?>
+    
+    <!-- Custom navbar styles from Customizer -->
+    <style>
+        .site-header {
+            background-color: <?php echo esc_attr($nav_bg_color); ?>;
+            color: <?php echo esc_attr($nav_text_color); ?>;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .site-header .site-title a,
+        .site-header .main-navigation a {
+            color: <?php echo esc_attr($nav_text_color); ?>;
+        }
+        
+        .transparent-header {
+            background-color: transparent;
+            box-shadow: none;
+            position: absolute;
+        }
+        
+        .transparent-header.scrolled {
+            background-color: <?php echo esc_attr($nav_bg_color); ?>;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .site-header {
+                background-color: <?php echo esc_attr($nav_bg_color); ?> !important;
+            }
+        }
+    </style>
 </head>
 
 <body <?php body_class(); ?>>
@@ -20,7 +68,7 @@
 <div id="page" class="site">
     <a class="skip-link screen-reader-text" href="#content"><?php esc_html_e('Skip to content', 'cuevas'); ?></a>
 
-    <header class="<?php echo (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) ? 'compact-header' : 'site-header'; ?>">
+    <header class="<?php echo esc_attr($header_class); ?>">
         <div class="container">
             <div class="header-inner">
                 <div class="site-branding">
@@ -48,7 +96,7 @@
                 <nav id="site-navigation" class="main-navigation">
                     <?php
                     wp_nav_menu(array(
-                        'theme_location' => 'primary',
+                        'theme_location' => 'primary-menu',
                         'menu_id'        => 'primary-menu',
                         'container'      => false,
                     ));

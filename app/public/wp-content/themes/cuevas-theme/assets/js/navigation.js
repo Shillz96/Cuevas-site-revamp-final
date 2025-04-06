@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-navigation');
+    const header = document.querySelector('.site-header');
+    const isTransparentHeader = header && header.classList.contains('transparent-header');
     
+    // Menu toggle functionality
     if (menuToggle && mainNav) {
         menuToggle.addEventListener('click', function() {
             mainNav.classList.toggle('active');
@@ -29,5 +32,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 spans[2].style.transform = 'none';
             }
         });
+    }
+    
+    // Header scroll effect for transparent header
+    if (isTransparentHeader) {
+        // Function to check scroll position and update header
+        function checkScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+        
+        // Initial check
+        checkScroll();
+        
+        // Add scroll event listener
+        window.addEventListener('scroll', checkScroll);
     }
 }); 

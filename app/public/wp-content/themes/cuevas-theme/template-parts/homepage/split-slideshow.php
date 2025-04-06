@@ -5,18 +5,51 @@
  * @package Cuevas_Western_Wear
  */
 
-// Get slideshow images from ACF repeater field if available, otherwise use defaults
+// Get slideshow images from Customizer
 $slides = array();
-$has_acf = function_exists('get_field');
 
-if ($has_acf && have_rows('slideshow_slides')) {
-    while (have_rows('slideshow_slides')) : the_row();
-        $slides[] = array(
-            'image' => get_sub_field('slide_image'),
-            'text' => get_sub_field('slide_text')
-        );
-    endwhile;
-} else {
+// Slide 1
+$image1 = get_theme_mod('cuevas_gallery_image_1', 'https://placehold.co/1920x1080/8B4513/FFF?text=Authentic');
+$text1 = get_theme_mod('cuevas_gallery_text_1', 'Authentic');
+if (!empty($image1)) {
+    $slides[] = array(
+        'image' => $image1,
+        'text' => $text1
+    );
+}
+
+// Slide 2
+$image2 = get_theme_mod('cuevas_gallery_image_2', 'https://placehold.co/1920x1080/A52A2A/FFF?text=Western');
+$text2 = get_theme_mod('cuevas_gallery_text_2', 'Western');
+if (!empty($image2)) {
+    $slides[] = array(
+        'image' => $image2,
+        'text' => $text2
+    );
+}
+
+// Slide 3
+$image3 = get_theme_mod('cuevas_gallery_image_3', 'https://placehold.co/1920x1080/D2691E/FFF?text=Heritage');
+$text3 = get_theme_mod('cuevas_gallery_text_3', 'Heritage');
+if (!empty($image3)) {
+    $slides[] = array(
+        'image' => $image3,
+        'text' => $text3
+    );
+}
+
+// Slide 4
+$image4 = get_theme_mod('cuevas_gallery_image_4', 'https://placehold.co/1920x1080/CD853F/FFF?text=Tradition');
+$text4 = get_theme_mod('cuevas_gallery_text_4', 'Tradition');
+if (!empty($image4)) {
+    $slides[] = array(
+        'image' => $image4,
+        'text' => $text4
+    );
+}
+
+// Fallback if no slides are set in customizer
+if (empty($slides)) {
     // Default fallback slides using placeholder service
     $slides = array(
         array(
@@ -41,7 +74,7 @@ if ($has_acf && have_rows('slideshow_slides')) {
 // Only show if we have slides
 if (!empty($slides)) :
 ?>
-<div class="split-slideshow">
+<section id="gallery-section" class="homepage-section split-slideshow">
     <div class="slideshow">
         <div class="slider">
             <?php foreach ($slides as $slide) : ?>
@@ -61,5 +94,5 @@ if (!empty($slides)) :
             <div class="item"><?php echo esc_html($slide['text']); ?></div>
         <?php endforeach; ?>
     </div>
-</div>
+</section><!-- #gallery-section -->
 <?php endif; ?> 

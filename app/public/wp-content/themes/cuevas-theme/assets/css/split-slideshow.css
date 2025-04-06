@@ -9,6 +9,9 @@
   background: #110101;
   font-family: 'Roboto', sans-serif;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .slideshow {
@@ -131,10 +134,53 @@
   line-height: 0.8;
 }
 
+/* Navigation Buttons */
+.slideshow-nav {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  gap: 20px;
+}
+
+.slideshow-nav button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 2px solid var(--color-accent, #8B4513);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.slideshow-nav button:hover {
+  background-color: var(--color-accent, #8B4513);
+  transform: scale(1.05);
+}
+
+.slideshow-nav button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.5);
+}
+
 @media (max-width: 767px) {
   .slideshow-text {
     font-size: 40px;
     letter-spacing: 10px;
+  }
+  
+  .slideshow-nav button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
   }
 }
 
@@ -147,4 +193,53 @@
 
 .slideshow.slideshow-left {
   border-right: 2px solid var(--color-accent, #8B4513);
+}
+
+/* Slide indicator for better UX */
+.slide-indicator {
+  position: absolute;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 150;
+  color: #fff;
+  font-size: 14px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 20px;
+  opacity: 0.7;
+}
+
+/* Visual cue for scrolling */
+.scroll-cue {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 150;
+  color: #fff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInOut 2s infinite;
+}
+
+.scroll-cue:after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+  margin-top: 5px;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 } 
