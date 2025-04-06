@@ -1,72 +1,190 @@
 <?php
 /**
- * Template part for displaying shop categories on the homepage
+ * Template part for displaying the shop categories section on the homepage
  *
  * @package Cuevas_Western_Wear
  */
 
-// Only display if WooCommerce is active
-if (!class_exists('WooCommerce')) {
-    return;
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-$section_title = get_theme_mod('cuevas_shop_categories_title', 'Shop Categories');
-$section_subtitle = get_theme_mod('cuevas_shop_categories_subtitle', 'Browse our Western collections');
+/**
+ * Get theme customizer setting with fallback to default value
+ * 
+ * @param string $setting_name The theme mod setting name
+ * @param mixed $default The default value if setting is not found
+ * @return mixed The setting value or default
+ */
+function get_shop_category_setting($setting_name, $default = '') {
+    $value = get_theme_mod($setting_name, $default);
+    
+    if (defined('WP_DEBUG') && WP_DEBUG && function_exists('cuevas_debug_log')) {
+        cuevas_debug_log("Shop category setting {$setting_name}: " . print_r($value, true));
+    }
+    
+    return $value;
+}
 
-// Define the categories to display (customize as needed)
-// Format: 'slug' => 'Title'
-$featured_categories = array(
-    'boots' => 'Western Boots',
-    'hats' => 'Western Hats',
-    'clothing' => 'Western Clothing'
-);
+// Section text content
+$section_title = get_shop_category_setting('cuevas_shop_categories_title', 'Shop Categories');
+$section_subtitle = get_shop_category_setting('cuevas_shop_categories_subtitle', 'Find your style in our collections');
 
-// Default background images using placeholder service
-$default_images = array(
-    'boots' => 'https://placehold.co/600x400/8B4513/FFF?text=Western+Boots',
-    'hats' => 'https://placehold.co/600x400/A52A2A/FFF?text=Western+Hats',
-    'clothing' => 'https://placehold.co/600x400/D2691E/FFF?text=Western+Clothing'
-);
+// Background image
+$background_image = get_shop_category_setting('cuevas_shop_categories_bg_image', '');
+if (empty($background_image)) {
+    $background_image = get_template_directory_uri() . '/assets/images/shop-categories-bg.jpg';
+}
+
+// Get category data from theme customizer
+$categories = [
+    [
+        'name' => get_shop_category_setting('cuevas_shop_cta1_title', 'Boots'),
+        'link' => get_shop_category_setting('cuevas_shop_cta1_url', '/product-category/boots/'),
+        'icon' => 'boot'
+    ],
+    [
+        'name' => get_shop_category_setting('cuevas_shop_cta2_title', 'Hats'),
+        'link' => get_shop_category_setting('cuevas_shop_cta2_url', '/product-category/hats/'),
+        'icon' => 'hat'
+    ],
+    [
+        'name' => get_shop_category_setting('cuevas_shop_cta3_title', 'Clothing'),
+        'link' => get_shop_category_setting('cuevas_shop_cta3_url', '/product-category/clothing/'),
+        'icon' => 'tshirt'
+    ],
+    [
+        'name' => 'Accessories',
+        'link' => '/product-category/accessories/',
+        'icon' => 'accessory'
+    ]
+];
 ?>
 
 <section id="shop-categories" class="homepage-section shop-categories-section">
-    <div class="section-header">
-        <h2 class="section-title"><?php echo esc_html($section_title); ?></h2>
-        <p class="section-subtitle"><?php echo esc_html($section_subtitle); ?></p>
+    <div class="section-background" style="background-image: url('<?php echo esc_url($background_image); ?>');">
+        <div class="overlay"></div>
     </div>
     
-    <div class="categories-grid">
-        <?php 
-        foreach ($featured_categories as $slug => $title) :
-            // Get the category term
-            $category = get_term_by('slug', $slug, 'product_cat');
-            
-            // If category doesn't exist, create a placeholder card
-            if (!$category) {
-                $image = $default_images[$slug];
-                $category_url = '#'; // Placeholder URL
-            } else {
-                // Get category image or use default
-                $thumbnail_id = get_term_meta($category->term_id, 'thumbnail_id', true);
-                $image = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : $default_images[$slug];
-                
-                // Get category URL
-                $category_url = get_term_link($category);
-            }
-        ?>
-            <div class="category-card">
-                <a href="<?php echo esc_url($category_url); ?>" class="category-link">
-                    <div class="category-image" style="background-image: url('<?php echo esc_url($image); ?>');">
-                        <div class="category-overlay"></div>
-                        <h3 class="category-title"><?php echo esc_html($title); ?></h3>
-                    </div>
-                </a>
-                <div class="category-button-container">
-                    <a href="<?php echo esc_url($category_url); ?>" class="category-button">
-                        Shop <?php echo esc_html($title); ?>
-                    </a>
-                </div>
-            </div>
-        <?php endforeach; ?>
+    <div class="section-content container">
+        <div class="section-header">
+            <h2 class="section-title"><?php echo esc_html($section_title); ?></h2>
+            <p class="section-subtitle"><?php echo esc_html($section_subtitle); ?></p>
+        </div>
+        
+        <div class="cta-buttons-container">
+            <?php foreach ($categories as $category) : ?>
+            <a href="<?php echo esc_url($category['link']); ?>" class="cta-button <?php echo esc_attr($category['icon']); ?>-button">
+                <span class="category-icon <?php echo esc_attr($category['icon']); ?>-icon"></span>
+                <span class="category-name"><?php echo esc_html($category['name']); ?></span>
+            </a>
+            <?php endforeach; ?>
+        </div>
     </div>
-</section><!-- #shop-categories --> 
+</section>
+
+<style>
+/* Inline critical CSS for shop categories section layout */
+.shop-categories-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.shop-categories-section .section-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+}
+
+.shop-categories-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.shop-categories-section .section-content {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    z-index: 1;
+}
+
+.shop-categories-section .section-header {
+    margin-bottom: 40px;
+}
+
+.shop-categories-section .section-title {
+    color: #fff;
+    font-size: 3rem;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.shop-categories-section .section-subtitle {
+    color: #fff;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.shop-categories-section .cta-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.shop-categories-section .cta-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(139, 69, 19, 0.8);
+    color: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    min-width: 180px;
+}
+
+.shop-categories-section .category-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.shop-categories-section .category-name {
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .shop-categories-section .cta-buttons-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .shop-categories-section .cta-button {
+        width: 80%;
+    }
+}
+</style> 

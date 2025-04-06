@@ -34,11 +34,11 @@ get_header();
     }
     get_template_part('template-parts/homepage/split-slideshow');
     
-    // 3. Featured Products Section
+    // 3. Full-screen Product Grid
     if (function_exists('cuevas_debug_log')) {
-        cuevas_debug_log('Loading featured products section');
+        cuevas_debug_log('Loading full-screen product grid');
     }
-    get_template_part('template-parts/homepage/featured-products');
+    get_template_part('template-parts/homepage/products-grid');
     
     // 4. Shop Categories Section
     if (function_exists('cuevas_debug_log')) {

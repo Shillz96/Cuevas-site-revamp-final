@@ -6,29 +6,47 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing animations and scrolling behavior');
     
-    // Add CSS for smooth scrolling transitions
+    // Add CSS for smooth scrolling transitions - keep scrollbar visible but simpler
     const style = document.createElement('style');
     style.textContent = `
-        body.is-animated-scrolling {
-            overflow: hidden !important;
+        html {
+            scrollbar-width: thin;
+        }
+        
+        body {
+            overflow-y: auto !important; /* Always show scrollbar */
+        }
+        
+        .is-scrolling {
+            scroll-behavior: smooth;
         }
         
         .split-slideshow.transitioning {
             pointer-events: none !important;
         }
         
-        /* Only hide section indicators created in previous page loads */
+        /* Hide ALL non-current indicators */
+        #fp-nav, 
+        .fp-slidesNav,
+        #fp-nav ul li, 
+        .fp-slidesNav ul li,
         .section-nav-indicators:not(.current-indicators) {
             display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Only our indicators should be visible */
+        .current-indicators.our-dot-indicators {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
     `;
     document.head.appendChild(style);
     
-    // Remove any existing indicators from previous page loads - gentle approach
-    document.querySelectorAll('.section-nav-indicators').forEach(function(indicator) {
-        // Add a data attribute to mark for removal
-        indicator.setAttribute('data-obsolete', 'true');
-    });
+    // Remove all existing indicators
+    removeAllPageIndicators();
     
     // Check if GSAP exists before trying to run animations
     if (typeof gsap === 'undefined') {
@@ -54,7 +72,45 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHeaderBehavior();
     initializeEntranceAnimations();
     initializeSmoothScroll();
+    
+    // Add hover animations for shop categories buttons
+    const shopButtons = document.querySelectorAll('#shop-categories a');
+    
+    shopButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(139, 69, 19, 1)';
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.4)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'rgba(139, 69, 19, 0.8)';
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
+        });
+    });
 });
+
+/**
+ * Aggressively remove all indicators from the page
+ */
+function removeAllPageIndicators() {
+    console.log('Removing all page indicators');
+    
+    // Remove FullPage.js navigation elements if they exist
+    const fpNavs = document.querySelectorAll('#fp-nav, .fp-slidesNav');
+    fpNavs.forEach(nav => nav.remove());
+    
+    // Remove all existing section indicators EXCEPT our custom one
+    const indicators = document.querySelectorAll('.section-nav-indicators:not(#custom-page-indicators)');
+    indicators.forEach(indicator => indicator.remove());
+    
+    // Set timeout to remove any that might be added later by plugins
+    setTimeout(function() {
+        const laterFpNavs = document.querySelectorAll('#fp-nav, .fp-slidesNav');
+        laterFpNavs.forEach(nav => nav.remove());
+    }, 500);
+}
 
 /**
  * Register GSAP plugins
@@ -81,11 +137,6 @@ function initializePlugins() {
  * Initialize smooth scrolling and section snapping for the homepage
  */
 function initializePageScrolling() {
-    // Remove obsolete indicators, but keep the existing ones that might still be in use
-    document.querySelectorAll('.section-nav-indicators[data-obsolete="true"]').forEach(function(indicator) {
-        indicator.remove();
-    });
-    
     // Get all homepage sections
     const sections = document.querySelectorAll('.homepage-section');
     
@@ -109,8 +160,8 @@ function initializePageScrolling() {
     
     console.log(`Slideshow is section #${slideshowIndex + 1}`);
     
-    // Only create section indicators if they don't already exist
-    let indicatorContainer = document.querySelector('.section-nav-indicators:not([data-obsolete="true"])');
+    // Only create section indicators if our custom one doesn't already exist
+    let indicatorContainer = document.querySelector('#custom-page-indicators');
     if (!indicatorContainer) {
         indicatorContainer = createSectionIndicators(sections);
     }
@@ -129,6 +180,9 @@ function initializePageScrolling() {
  * Setup section navigation system
  */
 function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
+    // Lockout mechanism - safer than isScrolling flag
+    let scrollLock = false;
+    
     // Determine current section based on scroll position
     function getCurrentSectionIndex() {
         const scrollPosition = window.scrollY;
@@ -148,42 +202,41 @@ function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
     
     // Function to move to a specific section
     window.moveToSection = function(index) {
-        if (index < 0 || index >= sections.length) return;
+        if (index < 0 || index >= sections.length || scrollLock) return;
         
         console.log(`Moving to section ${index + 1}`);
         
-        // Prevent any ongoing animations from interfering
-        document.body.classList.add('is-animated-scrolling');
+        // Set lock to prevent multiple scrolls
+        scrollLock = true;
         
-        // Scroll to target section
-        gsap.to(window, {
-            duration: 1, 
+        // Update indicator
+        updateActiveSection(index);
+        
+        // Simple approach - scroll into view with GSAP
+                    gsap.to(window, {
+                        duration: 0.5, 
             scrollTo: {
                 y: sections[index],
                 offsetY: 0,
-                autoKill: false
             },
-            ease: "power3.out",
+            ease: "power2.out",
             onComplete: function() {
-                // Update active section indicator
-                updateActiveSection(index);
-                
-                // Wait a bit before allowing more scrolling to prevent accidental scrolls
+                // Release lock after animation completes
                 setTimeout(function() {
-                    document.body.classList.remove('is-animated-scrolling');
+                    scrollLock = false;
                     
                     // If we moved to slideshow section, reset it to first slide
                     if (index === slideshowIndex && window.splitSlideshow && typeof window.splitSlideshow.goToSlide === 'function') {
-                        console.log('Resetting slideshow to first slide');
-                        window.splitSlideshow.goToSlide(0);
-                    }
-                }, 300);
+                                window.splitSlideshow.goToSlide(0);
+                            }
+                }, 200);
             }
         });
     };
     
     // Function to move to next section
     window.moveToNextSection = function() {
+        if (scrollLock) return;
         const currentIndex = getCurrentSectionIndex();
         if (currentIndex < sections.length - 1) {
             moveToSection(currentIndex + 1);
@@ -192,6 +245,7 @@ function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
     
     // Function to move to previous section
     window.moveToPrevSection = function() {
+        if (scrollLock) return;
         const currentIndex = getCurrentSectionIndex();
         if (currentIndex > 0) {
             moveToSection(currentIndex - 1);
@@ -213,10 +267,10 @@ function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
         });
     }
     
-    // Handle wheel-based scrolling
-    function handleScrolling(event) {
-        // Do nothing if we're in an animation transition
-        if (document.body.classList.contains('is-animated-scrolling')) {
+    // Handle wheel-based scrolling - simplified approach
+    function handleWheel(event) {
+        // Skip if locked or in slideshow
+        if (scrollLock) {
             event.preventDefault();
             return;
         }
@@ -230,7 +284,7 @@ function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
             return;
         }
         
-        // General section scrolling
+        // Simple approach - just check delta direction
         if (event.deltaY > 0) {
             // Scrolling down - go to next section
             if (currentSectionIndex < sections.length - 1) {
@@ -246,10 +300,24 @@ function setupSectionNavigation(sections, slideshowIndex, indicatorContainer) {
         }
     }
     
-    // Use a safer way to remove/add event listeners
-    const scrollHandlerRef = function(e) { handleScrolling(e); };
-    window.removeEventListener('wheel', scrollHandlerRef);
-    window.addEventListener('wheel', scrollHandlerRef, { passive: false });
+    // Simple wheel event listener
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // Update indicators on scroll - use throttled approach for better performance
+    let lastKnownScrollPosition = 0;
+    let ticking = false;
+    
+    window.addEventListener('scroll', function() {
+        lastKnownScrollPosition = window.scrollY;
+        
+        if (!ticking && !scrollLock) {
+            window.requestAnimationFrame(function() {
+                updateActiveSection(getCurrentSectionIndex());
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
     
     // Initial update of active section
     updateActiveSection(getCurrentSectionIndex());
@@ -357,25 +425,26 @@ function setupTouchNavigation() {
 function createSectionIndicators(sections) {
     // Create container for indicators
     const indicatorContainer = document.createElement('div');
-    indicatorContainer.className = 'section-nav-indicators current-indicators';
+    indicatorContainer.className = 'section-nav-indicators current-indicators our-dot-indicators';
+    indicatorContainer.id = 'custom-page-indicators';
     
     // Style for indicators
     const style = document.createElement('style');
     style.textContent = `
-        .section-nav-indicators.current-indicators {
+        #custom-page-indicators {
             position: fixed;
             right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 1000;
-            display: flex;
+            z-index: 9999;
+            display: flex !important;
             flex-direction: column;
             gap: 15px;
             padding: 8px;
             border-radius: 20px;
             background: rgba(0, 0, 0, 0.1);
         }
-        .section-indicator {
+        #custom-page-indicators .section-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
@@ -384,23 +453,26 @@ function createSectionIndicators(sections) {
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
-        .section-indicator:hover {
+        #custom-page-indicators .section-indicator:hover {
             transform: scale(1.2);
             background: rgba(255, 255, 255, 0.8);
         }
-        .section-indicator.active {
+        #custom-page-indicators .section-indicator.active {
             background: rgba(139, 69, 19, 0.9);
             transform: scale(1.3);
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         @media (max-width: 768px) {
-            .section-nav-indicators.current-indicators {
+            #custom-page-indicators {
                 right: 10px;
                 gap: 12px;
                 padding: 6px;
             }
-            .section-indicator {
+            #custom-page-indicators .section-indicator {
                 width: 10px;
                 height: 10px;
             }
@@ -411,10 +483,11 @@ function createSectionIndicators(sections) {
     // Add indicator for each section
     sections.forEach(function(section, index) {
         const indicator = document.createElement('div');
-        indicator.className = 'section-indicator';
+        indicator.className = 'section-indicator our-dots-indicator';
         indicator.setAttribute('title', `Section ${index + 1}`);
         indicator.setAttribute('data-section-index', index);
         indicator.addEventListener('click', function() {
+            console.log(`Indicator ${index + 1} clicked`);
             window.moveToSection(index);
         });
         
@@ -422,6 +495,13 @@ function createSectionIndicators(sections) {
     });
     
     document.body.appendChild(indicatorContainer);
+    
+    // One final check to remove other indicators, but not ours
+    setTimeout(function() {
+        // Remove only non-custom indicators
+        const fpNavs = document.querySelectorAll('#fp-nav, .fp-slidesNav');
+        fpNavs.forEach(nav => nav.remove());
+    }, 1000);
     
     // Return the container for later reference
     return indicatorContainer;
@@ -439,7 +519,7 @@ function initializeBasicAnimations() {
         const headings = document.querySelectorAll('h1, h2.section-title');
         if (headings && headings.length > 0) {
             gsap.from(headings, {
-                opacity: 0,
+                        opacity: 0,
                 y: 30,
                 duration: 1,
                 stagger: 0.2,
@@ -466,18 +546,18 @@ function initializeBasicAnimations() {
             buttons.forEach(function(button) {
                 button.addEventListener('mouseenter', function() {
                     gsap.to(this, {
-                        scale: 1.05,
-                        duration: 0.3,
-                        ease: 'power2.out'
-                    });
+                            scale: 1.05,
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
                 });
                 
                 button.addEventListener('mouseleave', function() {
                     gsap.to(this, {
-                        scale: 1,
-                        duration: 0.3,
-                        ease: 'power2.out'
-                    });
+                            scale: 1,
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
                 });
             });
         }
@@ -506,29 +586,36 @@ function initializeEntranceAnimations() {
             
             if (heroTitle) {
                 tl.from(heroTitle, {
-                    opacity: 0,
+            opacity: 0,
                     y: 50,
-                    duration: 1,
+            duration: 1,
                     ease: "power3.out"
                 });
             }
             
             if (heroSubtitle) {
                 tl.from(heroSubtitle, {
-                    opacity: 0,
+                opacity: 0,
                     y: 30,
-                    duration: 1,
+                duration: 1,
                     ease: "power3.out"
                 }, "-=0.6");
             }
             
             if (heroButton) {
-                tl.from(heroButton, {
-                    opacity: 0,
-                    y: 20,
-                    duration: 0.8,
-                    ease: "power3.out"
-                }, "-=0.4");
+                tl.fromTo(heroButton,
+                    { // From state
+                        opacity: 0,
+                        y: 20
+                    },
+                    { // To state
+                        opacity: 1, // Explicitly animate to opacity 1
+                        y: 0,       // Explicitly animate to y 0
+                        duration: 0.8,
+                        ease: "power3.out"
+                    },
+                    "-=0.4" // Keep the timing offset
+                );
             }
         }
         
@@ -536,7 +623,7 @@ function initializeEntranceAnimations() {
         animateSection('.featured-products-section');
         
         // Animate shop categories section
-        animateSection('.shop-categories-section');
+        animateShopCategories();
     } catch (error) {
         console.error('Error in entrance animations:', error);
     }
@@ -601,6 +688,108 @@ function animateSection(selector) {
             stagger: 0.15,
             ease: "power3.out"
         }, "-=0.3");
+    }
+}
+
+/**
+ * Create specific animation for shop categories section
+ */
+function animateShopCategories() {
+    const section = document.querySelector('.shop-categories-section');
+    if (!section) return;
+    
+    const background = section.querySelector('.section-background');
+    const overlay = section.querySelector('.overlay');
+    const title = section.querySelector('.section-title');
+    const subtitle = section.querySelector('.section-subtitle');
+    const buttons = section.querySelectorAll('.cta-button');
+    
+    // Create timeline with ScrollTrigger
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: false,
+            toggleActions: 'play none none none',
+            once: true
+        }
+    });
+    
+    // Background reveal with scale effect
+    if (background) {
+        tl.fromTo(background, 
+            { scale: 1.1, opacity: 0 }, 
+            { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" }, 
+            0
+        );
+    }
+    
+    // Fade in overlay
+    if (overlay) {
+        tl.fromTo(overlay, 
+            { opacity: 0 }, 
+            { opacity: 1, duration: 1, ease: "power2.out" }, 
+            0.2
+        );
+    }
+    
+    // Fade and slide in title
+    if (title) {
+        tl.fromTo(title, 
+            { y: 50, opacity: 0 }, 
+            { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }, 
+            0.4
+        );
+    }
+    
+    // Fade and slide in subtitle
+    if (subtitle) {
+        tl.fromTo(subtitle, 
+            { y: 30, opacity: 0 }, 
+            { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, 
+            0.6
+        );
+    }
+    
+    // Staggered appearance of buttons
+    if (buttons.length) {
+        tl.fromTo(buttons, 
+            { y: 40, opacity: 0, scale: 0.9 }, 
+            { 
+                y: 0, 
+                opacity: 1, 
+                scale: 1,
+                duration: 0.7, 
+                stagger: 0.15, 
+                ease: "back.out(1.5)",
+                onComplete: function() {
+                    // Add hover animations after buttons appear
+                    buttons.forEach(button => {
+                        button.addEventListener('mouseenter', function() {
+                            gsap.to(this, {
+                                y: -8,
+                                scale: 1.05,
+                                backgroundColor: 'rgba(139, 69, 19, 1)',
+                                boxShadow: '0 8px 15px rgba(0, 0, 0, 0.4)',
+                                duration: 0.3
+                            });
+                        });
+                        
+                        button.addEventListener('mouseleave', function() {
+                            gsap.to(this, {
+                                y: 0,
+                                scale: 1,
+                                backgroundColor: 'rgba(139, 69, 19, 0.8)',
+                                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+                                duration: 0.3
+                            });
+                        });
+                    });
+                }
+            }, 
+            0.8
+        );
     }
 }
 
@@ -688,14 +877,14 @@ function initializeSmoothScroll() {
                 // Use ScrollToPlugin if available
                 if (typeof ScrollToPlugin !== 'undefined') {
                     gsap.to(window, {
-                        duration: 1,
+                        duration: 0.6,
                         scrollTo: {
                             y: target,
                             offsetY: 50
                         },
-                        ease: 'power3.out'
+                        ease: 'power2.out'
                     });
-                } else {
+        } else {
                     // Fallback to native scroll
                     const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 50;
                     window.scrollTo({

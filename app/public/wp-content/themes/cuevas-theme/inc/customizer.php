@@ -266,6 +266,90 @@ function cuevas_customize_register( $wp_customize ) {
 		'section'     => 'cuevas_shop_categories_section',
 		'type'        => 'text',
 	) );
+
+	// Background Image
+	$wp_customize->add_setting( 'cuevas_shop_categories_bg_image', array(
+		'default'           => '',
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	
+	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'cuevas_shop_categories_bg_image', array(
+		'label'       => __( 'Background Image', 'cuevas' ),
+		'description' => __( 'Upload a background image for the shop categories section', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+	) ) );
+
+	// CTA 1 Title
+	$wp_customize->add_setting( 'cuevas_shop_cta1_title', array(
+		'default'           => 'Boots',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta1_title', array(
+		'label'       => __( 'First CTA Button Title', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'text',
+	) );
+	
+	// CTA 1 URL
+	$wp_customize->add_setting( 'cuevas_shop_cta1_url', array(
+		'default'           => '#',
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta1_url', array(
+		'label'       => __( 'First CTA Button URL', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'url',
+	) );
+
+	// CTA 2 Title
+	$wp_customize->add_setting( 'cuevas_shop_cta2_title', array(
+		'default'           => 'Hats',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta2_title', array(
+		'label'       => __( 'Second CTA Button Title', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'text',
+	) );
+	
+	// CTA 2 URL
+	$wp_customize->add_setting( 'cuevas_shop_cta2_url', array(
+		'default'           => '#',
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta2_url', array(
+		'label'       => __( 'Second CTA Button URL', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'url',
+	) );
+
+	// CTA 3 Title
+	$wp_customize->add_setting( 'cuevas_shop_cta3_title', array(
+		'default'           => 'Clothing',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta3_title', array(
+		'label'       => __( 'Third CTA Button Title', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'text',
+	) );
+	
+	// CTA 3 URL
+	$wp_customize->add_setting( 'cuevas_shop_cta3_url', array(
+		'default'           => '#',
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	
+	$wp_customize->add_control( 'cuevas_shop_cta3_url', array(
+		'label'       => __( 'Third CTA Button URL', 'cuevas' ),
+		'section'     => 'cuevas_shop_categories_section',
+		'type'        => 'url',
+	) );
 	
 	// Add Navigation Appearance Section
 	$wp_customize->add_section( 'cuevas_navigation_section', array(

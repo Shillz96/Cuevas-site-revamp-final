@@ -8,6 +8,8 @@ jQuery(document).ready(function($) {
   // Only initialize if the slideshow container exists
   if ($('.split-slideshow').length === 0) return;
   
+  console.log('Initializing split slideshow');
+  
   var $slider = $('.slideshow .slider'),
       maxItems = $('.item', $slider).length,
       dragging = false,
@@ -58,7 +60,7 @@ jQuery(document).ready(function($) {
     verticalSwiping: true,
     arrows: false,
     infinite: false,
-    dots: true,
+    dots: false, // Don't show dots, we have our own indicators
     speed: 1000,
     cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)'
   }).on('beforeChange', function(event, slick, currentSlide, nextSlide) {
@@ -72,6 +74,8 @@ jQuery(document).ready(function($) {
     // Update slide indicator and hide scroll cue on slide change
     updateSlideIndicator(nextSlide);
     $scrollCue.fadeOut(400);
+    
+    console.log(`Slideshow changing from slide ${currentSlide + 1} to ${nextSlide + 1}`);
   }).on("wheel", function(event) {
     // If body has the animated scrolling class, don't handle wheel events
     if (document.body.classList.contains('is-animated-scrolling')) {
@@ -106,6 +110,7 @@ jQuery(document).ready(function($) {
         $('.split-slideshow').addClass('transitioning');
         
         if (prevSection.length && typeof window.moveToPrevSection === 'function') {
+          console.log('Moving to previous section from slideshow');
           // Mark as transitioning
           window.moveToPrevSection();
           // Remove transitioning class after animation completes
@@ -122,6 +127,7 @@ jQuery(document).ready(function($) {
         $('.split-slideshow').addClass('transitioning');
         
         if (nextSection.length && typeof window.moveToNextSection === 'function') {
+          console.log('Moving to next section from slideshow');
           // Call the transition function
           window.moveToNextSection();
           // Remove transitioning class after animation completes
@@ -155,7 +161,7 @@ jQuery(document).ready(function($) {
       var diffTracking = newTracking - tracking;
       $('.slideshow-right .slick-track').css({'transform': 'matrix(1, 0, 0, 1, 0, ' + (rightTracking - diffTracking) + ')'});
     }
-  }).on('mouseleave touchend mouseup', function() {
+  }).on('mouseleave mouseup touchend', function() {
     // End dragging
     dragging = false;
   }).on('init reInit afterChange', function(event, slick, currentSlide) {
@@ -175,7 +181,7 @@ jQuery(document).ready(function($) {
     initialSlide: maxItems - 1
   });
   
-  // Initialize text slideshow
+  // Initialize text slideshow if it exists
   $('.slideshow-text').slick({
     swipe: false,
     vertical: true,
@@ -196,115 +202,68 @@ jQuery(document).ready(function($) {
   });
   
   // Add navigation buttons with improved visibility and positioning
-  var $navContainer = $('<div class="slideshow-nav"></div>').appendTo($('.split-slideshow'));
-  $('<button class="prev-slide" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>').appendTo($navContainer).on('click', function(e) {
-    e.preventDefault();
-    
-    // If body has the animated scrolling class, don't handle clicks
-    if (document.body.classList.contains('is-animated-scrolling')) {
-      return;
-    }
-    
-    if (!isSlideAnimating) {
-      var currentSlide = $('.slideshow-left').slick('slickCurrentSlide');
-      var isFirstSlide = currentSlide === 0;
-      
-      if (isFirstSlide) {
-        // If at first slide, go to previous section
-        var prevSection = $('.split-slideshow').prev('.homepage-section');
-        $('.split-slideshow').addClass('transitioning');
-        
-        if (prevSection.length && typeof window.moveToPrevSection === 'function') {
-          window.moveToPrevSection();
-          // Remove transitioning class after animation completes
-          setTimeout(function() {
-            $('.split-slideshow').removeClass('transitioning');
-          }, 1500);
-        }
-      } else {
-        // Go to previous slide
-        $('.slideshow-left').slick('slickPrev');
+  var $prevButton = $('<button class="slide-navigation-button prev-slide" aria-label="Previous slide"><i class="arrow-icon prev-icon"></i></button>').appendTo($('.split-slideshow'));
+  var $nextButton = $('<button class="slide-navigation-button next-slide" aria-label="Next slide"><i class="arrow-icon next-icon"></i></button>').appendTo($('.split-slideshow'));
+
+  // Button click handlers
+  $prevButton.on('click', function() {
+    if (isSlideAnimating) return;
+    var currentSlide = $('.slideshow-left').slick('slickCurrentSlide');
+    if (currentSlide === 0) {
+      // If at first slide, go to previous section
+      if (typeof window.moveToPrevSection === 'function') {
+        window.moveToPrevSection();
       }
-      $scrollCue.fadeOut(400);
+    } else {
+      $('.slideshow-left').slick('slickPrev');
     }
   });
   
-  $('<button class="next-slide" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>').appendTo($navContainer).on('click', function(e) {
-    e.preventDefault();
+  $nextButton.on('click', function() {
+    if (isSlideAnimating) return;
+    var currentSlide = $('.slideshow-left').slick('slickCurrentSlide');
+    var isLastSlide = currentSlide === maxItems - 1;
     
-    // If body has the animated scrolling class, don't handle clicks
-    if (document.body.classList.contains('is-animated-scrolling')) {
-      return;
-    }
-    
-    if (!isSlideAnimating) {
-      // Check if we're at the last slide
-      var currentSlide = $('.slideshow-left').slick('slickCurrentSlide');
-      var isLastSlide = currentSlide === maxItems - 1;
-      
-      if (isLastSlide) {
-        // If at the last slide, move to the next section
-        var nextSection = $('.split-slideshow').next('.homepage-section');
-        $('.split-slideshow').addClass('transitioning');
-        
-        if (nextSection.length && typeof window.moveToNextSection === 'function') {
-          window.moveToNextSection();
-          // Remove transitioning class after animation completes
-          setTimeout(function() {
-            $('.split-slideshow').removeClass('transitioning');
-          }, 1500);
-        }
-      } else {
-        // Otherwise go to next slide
-        $('.slideshow-left').slick('slickNext');
+    if (isLastSlide) {
+      // If at last slide, go to next section
+      if (typeof window.moveToNextSection === 'function') {
+        window.moveToNextSection();
       }
-      $scrollCue.fadeOut(400);
+    } else {
+      $('.slideshow-left').slick('slickNext');
     }
   });
   
-  // Make sure slideshow is properly initialized
-  setTimeout(function() {
-    // Force a resize event to ensure Slick recalculates dimensions properly
-    $(window).trigger('resize');
-    
-    // Force slider to redraw after small delay
-    $('.slideshow-left').slick('refresh');
-    $('.slideshow-right .slider').slick('refresh');
-    $('.slideshow-text').slick('refresh');
-    
-    // Initialize slide indicator
-    updateSlideIndicator($('.slideshow-left').slick('slickCurrentSlide'));
-  }, 100);
+  // Set up initial slide indicator
+  updateSlideIndicator(0);
   
-  // Expose methods for ScrollTrigger integration
+  // Expose slide navigation interface to global scope for use by animations.js
   window.splitSlideshow = {
-    getSlideCount: function() {
-      return maxItems;
+    goToSlide: function(index) {
+      if (index >= 0 && index < maxItems) {
+        console.log(`Going to slide ${index + 1} of ${maxItems}`);
+        $('.slideshow-left').slick('slickGoTo', index);
+      }
+    },
+    next: function() {
+      $('.slideshow-left').slick('slickNext');
+    },
+    prev: function() {
+      $('.slideshow-left').slick('slickPrev');
     },
     getCurrentSlide: function() {
       return $('.slideshow-left').slick('slickCurrentSlide');
     },
-    isAnimating: function() {
-      return isSlideAnimating;
+    getMaxSlides: function() {
+      return maxItems;
     },
-    goToSlide: function(index) {
-      if (index >= 0 && index < maxItems) {
-        $('.slideshow-left').slick('slickGoTo', index);
-      }
+    isLastSlide: function() {
+      return $('.slideshow-left').slick('slickCurrentSlide') === maxItems - 1;
     },
-    refresh: function() {
-      $('.slideshow-left').slick('refresh');
-      $('.slideshow-right .slider').slick('refresh');
-      $('.slideshow-text').slick('refresh');
+    isFirstSlide: function() {
+      return $('.slideshow-left').slick('slickCurrentSlide') === 0;
     }
   };
   
-  // Make slick gallery adapt to screen size changes
-  $(window).on('resize', function() {
-    setTimeout(function() {
-      $('.slideshow-left').slick('refresh');
-      $('.slideshow-right .slider').slick('refresh');
-      $('.slideshow-text').slick('refresh');
-    }, 50);
-  });
+  console.log('Split slideshow initialization complete');
 });

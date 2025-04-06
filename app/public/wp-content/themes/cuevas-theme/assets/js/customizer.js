@@ -69,4 +69,52 @@
 			$( '#shop-categories .section-subtitle' ).text( to );
 		} );
 	} );
+	
+	// Update shop categories section background image
+	wp.customize('cuevas_shop_categories_bg_image', function(value) {
+		value.bind(function(to) {
+			if (to) {
+				// Update the background image
+				$('.shop-categories-background').css('background-image', 'url(' + to + ')');
+				console.log('Updated shop categories background image to:', to);
+			}
+		});
+	});
+	
+	// CTA Button Updates
+	wp.customize( 'cuevas_shop_cta1_title', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(1)' ).text( to );
+		} );
+	} );
+	
+	wp.customize( 'cuevas_shop_cta1_url', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(1)' ).attr( 'href', to );
+		} );
+	} );
+	
+	wp.customize( 'cuevas_shop_cta2_title', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(2)' ).text( to );
+		} );
+	} );
+	
+	wp.customize( 'cuevas_shop_cta2_url', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(2)' ).attr( 'href', to );
+		} );
+	} );
+	
+	wp.customize( 'cuevas_shop_cta3_title', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(3)' ).text( to );
+		} );
+	} );
+	
+	wp.customize( 'cuevas_shop_cta3_url', function( value ) {
+		value.bind( function( to ) {
+			$( '#shop-categories .cta-buttons a:nth-child(3)' ).attr( 'href', to );
+		} );
+	} );
 } )( jQuery ); 
