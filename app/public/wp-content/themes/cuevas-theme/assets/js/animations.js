@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEntranceAnimations();
     initializeSmoothScroll();
     
-    // Add hover animations for shop categories buttons
+    // Remove hover animations handled by CSS now
+    /*
     const shopButtons = document.querySelectorAll('#shop-categories a');
     
     shopButtons.forEach(button => {
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
         });
     });
+    */
 });
 
 /**
@@ -762,31 +764,7 @@ function animateShopCategories() {
                 scale: 1,
                 duration: 0.7, 
                 stagger: 0.15, 
-                ease: "back.out(1.5)",
-                onComplete: function() {
-                    // Add hover animations after buttons appear
-                    buttons.forEach(button => {
-                        button.addEventListener('mouseenter', function() {
-                            gsap.to(this, {
-                                y: -8,
-                                scale: 1.05,
-                                backgroundColor: 'rgba(139, 69, 19, 1)',
-                                boxShadow: '0 8px 15px rgba(0, 0, 0, 0.4)',
-                                duration: 0.3
-                            });
-                        });
-                        
-                        button.addEventListener('mouseleave', function() {
-                            gsap.to(this, {
-                                y: 0,
-                                scale: 1,
-                                backgroundColor: 'rgba(139, 69, 19, 0.8)',
-                                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-                                duration: 0.3
-                            });
-                        });
-                    });
-                }
+                ease: "back.out(1.5)"
             }, 
             0.8
         );

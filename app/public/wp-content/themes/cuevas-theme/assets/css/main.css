@@ -9,8 +9,12 @@
 :root {
     /* Primary Colors */
     --primary: #8B4513;
+    --primary-rgb: 139, 69, 19; /* Added RGB version for use in rgba() */
     --primary-light: #A0522D;
     --primary-dark: #663300;
+    
+    /* Button Color (from hero button) */
+    --color-button: #A52A2A; /* Brown */
     
     /* Secondary Colors */
     --secondary: #444444;
@@ -87,6 +91,16 @@ body {
     padding: 0;
     width: 100vw !important;
     max-width: 100% !important;
+    padding-top: var(--header-height, 80px); /* Restore default padding */
+}
+
+body.admin-bar .site-header {
+    top: 32px; /* Adjust for WP Admin Bar */
+}
+
+/* Adjust padding when admin bar is present */
+body.admin-bar {
+    padding-top: calc(var(--header-height, 80px) + 32px);
 }
 
 img {
@@ -302,6 +316,18 @@ footer {
         flex-direction: column;
         gap: var(--spacing-sm);
     }
+    
+    /* Adjust body padding for potentially smaller mobile header */
+    body {
+        padding-top: var(--header-height, 60px);
+    }
+    body.admin-bar {
+        padding-top: calc(var(--header-height, 60px) + 46px);
+    }
+    
+    body.admin-bar .site-header {
+        top: 46px; /* Mobile admin bar height */
+    }
 }
 
 @media (max-width: 576px) {
@@ -325,8 +351,13 @@ footer {
 .compact-header {
     background-color: var(--white);
     box-shadow: var(--shadow-sm);
-    position: relative;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
     z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, padding 0.3s ease;
+    height: var(--header-height, 80px);
 }
 
 .compact-header {
@@ -338,6 +369,7 @@ footer {
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-sm) 0;
+    height: 100%;
 }
 
 .site-branding {
@@ -506,36 +538,85 @@ footer {
 }
 
 @media (max-width: 768px) {
+    .header-inner {
+        /* Keep space-between or adjust if branding needs centering */
+        /* Example: justify-content: space-between; */ 
+    }
+
+    .site-branding {
+        /* Allow branding to take up space, push nav to the end */
+        flex-grow: 1;
+        text-align: center; /* Center logo/title if needed */
+        /* Remove margin-right if it exists */
+        margin-right: 0;
+        /* Add margin to space from menu toggle if needed */
+        margin-left: var(--spacing-sm);
+    }
+
     .menu-toggle {
-        display: block;
+        display: block !important; /* Show hamburger icon */
+        z-index: 1001;
+        order: -1;
     }
 
     .main-navigation {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: var(--white);
-        padding: var(--spacing-md);
-        box-shadow: var(--shadow-md);
+       display: none !important; /* Hide nav by default */
+       order: 1;
+       position: absolute;
+       top: 100%;
+       left: 0;
+       width: 100%;
+       background-color: var(--secondary-dark);
+       box-shadow: var(--shadow-md);
+       padding: var(--spacing-sm) 0;
     }
 
     .main-navigation.active {
-        display: block;
+        display: block !important; /* Show nav when active */
     }
 
     .main-navigation ul {
         flex-direction: column;
+        width: 100%;
     }
 
     .main-navigation li {
-        margin: var(--spacing-xs) 0;
+        margin: 0;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .main-navigation li:last-child {
+        border-bottom: none;
     }
 
+    .main-navigation a {
+        display: block;
+        padding: var(--spacing-md) var(--spacing-sm);
+        color: var(--white);
+    }
+    
+    .main-navigation a:hover {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    
+    .main-navigation a::after {
+        display: none;
+    }
+    
     .nav-extras {
-        margin: var(--spacing-sm) 0 0;
-        justify-content: center;
+        display: none;
+    }
+    
+    body {
+        padding-top: var(--header-height, 60px);
+    }
+    body.admin-bar {
+        padding-top: calc(var(--header-height, 60px) + 46px); /* Adjust for mobile admin bar */
+    }
+    body.admin-bar .site-header {
+        top: 46px; /* Mobile admin bar height */
     }
 
     .category-banner {
@@ -800,4 +881,17 @@ footer {
 .hero-section {
     width: 100%;
     max-width: 100%;
+}
+
+/* Apply height and overflow specifically for homepage scrolling */
+body.home,
+body.page-template-front-page {
+    height: 100%;
+    overflow: hidden !important; /* Prevent scrolling past sections */
+}
+
+/* Hide footer specifically on the front page */
+body.home .site-footer,
+body.page-template-front-page .site-footer {
+    display: none;
 } 

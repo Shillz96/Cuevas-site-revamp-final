@@ -1,0 +1,3 @@
+2025/04/04 23:06:32 [error] 3088#17692: *3884 access forbidden by rule, client: ::1, server: , request: "GET //app/public/wp-content/uploads/import-products.php HTTP/1.1", host: "localhost:10005"
+2025/04/04 23:06:43 [error] 3088#17692: *3888 access forbidden by rule, client: ::1, server: , request: "GET /app/public/wp-content/uploads/import-products.php HTTP/1.1", host: "localhost:10005"
+2025/04/04 23:06:54 [error] 3088#17692: *3889 access forbidden by rule, client: ::1, server: , request: "GET /app/public/wp-content/uploads/import-products.php HTTP/1.1", host: "localhost:10005"

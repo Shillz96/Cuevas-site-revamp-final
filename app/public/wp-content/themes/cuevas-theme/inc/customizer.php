@@ -5,6 +5,7 @@
  * @package Cuevas_Western_Wear
  */
 
+if ( ! function_exists( 'cuevas_customize_register' ) ) : /** Add function_exists check */
 /**
  * Add postMessage support for site title and description for the Theme Customizer.
  *
@@ -277,6 +278,7 @@ function cuevas_customize_register( $wp_customize ) {
 		'label'       => __( 'Background Image', 'cuevas' ),
 		'description' => __( 'Upload a background image for the shop categories section', 'cuevas' ),
 		'section'     => 'cuevas_shop_categories_section',
+		'settings'    => 'cuevas_shop_categories_bg_image',
 	) ) );
 
 	// CTA 1 Title
@@ -396,18 +398,23 @@ function cuevas_customize_register( $wp_customize ) {
 	) );
 }
 add_action( 'customize_register', 'cuevas_customize_register' );
+endif; /** End function_exists check */
 
 /**
  * Sanitize checkbox values
  */
-function cuevas_sanitize_checkbox( $checked ) {
-    return ( isset( $checked ) && true == $checked ) ? true : false;
+if ( ! function_exists( 'cuevas_sanitize_checkbox' ) ) {
+    function cuevas_sanitize_checkbox( $checked ) {
+        return ( isset( $checked ) && true == $checked ) ? true : false;
+    }
 }
 
 /**
  * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
  */
-function cuevas_customize_preview_js() {
-	wp_enqueue_script( 'cuevas-customizer', get_template_directory_uri() . '/assets/js/customizer.js', array( 'customize-preview' ), CUEVAS_VERSION, true );
-}
-add_action( 'customize_preview_init', 'cuevas_customize_preview_js' ); 
+if ( ! function_exists( 'cuevas_customize_preview_js' ) ) {
+    function cuevas_customize_preview_js() {
+    	wp_enqueue_script( 'cuevas-customizer', get_template_directory_uri() . '/assets/js/customizer.js', array( 'customize-preview' ), CUEVAS_VERSION, true );
+    }
+    add_action( 'customize_preview_init', 'cuevas_customize_preview_js' ); 
+} 

@@ -424,4 +424,76 @@
         width: 100%;
         min-width: unset;
     }
-} 
+}
+
+/* Single Product Page Styles from product-page.md */
+.single-product-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 30px;
+  background-color: #F5F5DC; /* Beige */
+  color: #3E2723; /* Dark Brown */
+}
+
+.product-gallery-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.product-details-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Style product images */
+.woocommerce div.product div.images img {
+  border: 2px solid #8B4513; /* Saddle Brown */
+}
+
+/* Style product title */
+.woocommerce div.product .product_title {
+  color: #3E2723; /* Dark Brown */
+  font-family: 'Playfair Display', serif; /* Example elegant font */
+  font-size: 2rem;
+}
+
+/* Style product price */
+.woocommerce div.product p.price {
+  color: #A52A2A; /* Brown */
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Style Add to Cart button */
+.woocommerce div.product form.cart .button {
+  background-color: #A52A2A; /* Brown */
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s;
+}
+
+.woocommerce div.product form.cart .button:hover {
+  background-color: #D2691E; /* Chocolate */
+}
+
+/* Style product tabs */
+.woocommerce div.product .woocommerce-tabs ul.tabs li {
+  background-color: #F5F5DC; /* Beige */
+  border-color: #8B4513; /* Saddle Brown */
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
+  background-color: white;
+  border-bottom-color: white;
+}
+
+.woocommerce div.product .woocommerce-tabs .panel {
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #8B4513; /* Saddle Brown */
+  border-top: none;
+}
+
+/* End Single Product Page Styles */ 

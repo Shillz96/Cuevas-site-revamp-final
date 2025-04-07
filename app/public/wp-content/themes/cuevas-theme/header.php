@@ -12,12 +12,24 @@ $nav_transparent = get_theme_mod('cuevas_nav_transparent', true);
 
 // Set the header class based on whether we want transparency on homepage
 $header_class = 'site-header';
+$is_transparent_header_active = false; // Flag for body class
 if (is_front_page() && $nav_transparent) {
     $header_class .= ' transparent-header';
+    $is_transparent_header_active = true;
 }
 if (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) {
     $header_class = 'compact-header';
 }
+
+// Function to add body class
+function cuevas_body_classes_transparent_header( $classes ) {
+    global $is_transparent_header_active;
+    if ( $is_transparent_header_active ) {
+        $classes[] = 'transparent-header-active';
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'cuevas_body_classes_transparent_header' );
 
 ?>
 <!DOCTYPE html>
@@ -28,39 +40,35 @@ if (function_exists('is_shop') && (is_shop() || is_product_category() || is_prod
     <link rel="profile" href="https://gmpg.org/xfn/11">
     <?php wp_head(); ?>
     
+    <?php // Only output header styles if not the front page 
+    if ( ! is_front_page() ) : ?>
     <!-- Custom navbar styles from Customizer -->
     <style>
+        /* Styles for non-frontpage header */
         .site-header {
             background-color: <?php echo esc_attr($nav_bg_color); ?>;
             color: <?php echo esc_attr($nav_text_color); ?>;
-            position: fixed;
+            position: fixed; /* Or relative/static if not fixed on other pages */
             width: 100%;
             z-index: 1000;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            height: var(--header-height, 80px); /* Ensure height for padding calculation */
         }
         
         .site-header .site-title a,
-        .site-header .main-navigation a {
+        .site-header .main-navigation a,
+        .site-header .menu-toggle span {
             color: <?php echo esc_attr($nav_text_color); ?>;
         }
         
-        .transparent-header {
-            background-color: transparent;
-            box-shadow: none;
-            position: absolute;
-        }
-        
-        .transparent-header.scrolled {
-            background-color: <?php echo esc_attr($nav_bg_color); ?>;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
+        /* Adjust mobile hamburger icon background */
         @media (max-width: 768px) {
-            .site-header {
-                background-color: <?php echo esc_attr($nav_bg_color); ?> !important;
-            }
+             .site-header .menu-toggle span {
+                  background-color: <?php echo esc_attr($nav_text_color); ?> !important;
+             }
         }
     </style>
+    <?php endif; ?>
 </head>
 
 <body <?php body_class(); ?>>
@@ -68,9 +76,18 @@ if (function_exists('is_shop') && (is_shop() || is_product_category() || is_prod
 <div id="page" class="site">
     <a class="skip-link screen-reader-text" href="#content"><?php esc_html_e('Skip to content', 'cuevas'); ?></a>
 
+    <?php // Conditionally output the header
+    if ( ! is_front_page() ) : ?>
     <header class="<?php echo esc_attr($header_class); ?>">
         <div class="container">
             <div class="header-inner">
+                
+                <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
                 <div class="site-branding">
                     <?php
                     if (has_custom_logo()) :
@@ -86,12 +103,6 @@ if (function_exists('is_shop') && (is_shop() || is_product_category() || is_prod
                         <?php endif; ?>
                     <?php endif; ?>
                 </div><!-- .site-branding -->
-
-                <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
 
                 <nav id="site-navigation" class="main-navigation">
                     <?php
@@ -110,6 +121,7 @@ if (function_exists('is_shop') && (is_shop() || is_product_category() || is_prod
             </div>
         </div>
     </header>
+    <?php endif; // End conditional header output ?>
 
     <?php
     // Display shop banner if on shop page
@@ -157,6 +169,12 @@ if (function_exists('is_shop') && (is_shop() || is_product_category() || is_prod
     <?php endif; ?>
 
     <div id="content" class="site-content full-width-content">
-        <?php if (!is_front_page()): ?>
+        <?php // Adjust container logic slightly as header padding is now conditional 
+        $needs_container = !is_front_page(); // Assume non-front pages need container
+        if (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) {
+             $needs_container = true; // Shop pages definitely need container
+        }
+        
+        if ($needs_container): ?>
             <div class="<?php echo (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag())) ? 'shop-container container' : 'container'; ?>">
         <?php endif; ?> 

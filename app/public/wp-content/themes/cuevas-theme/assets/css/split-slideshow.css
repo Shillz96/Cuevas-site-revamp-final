@@ -187,7 +187,7 @@
 /* Western style modifications */
 .slideshow-text .item {
   position: relative;
-  color: var(--color-text, #3E2723);
+  color: var(--white);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 

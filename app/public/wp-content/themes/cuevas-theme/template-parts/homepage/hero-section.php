@@ -20,11 +20,23 @@ $hero_button_url = get_theme_mod('cuevas_hero_button_url', '#shop-categories');
         <div class="hero-content">
             <h1 class="hero-title"><?php echo esc_html($hero_title); ?></h1>
             <p class="hero-subtitle"><?php echo esc_html($hero_subtitle); ?></p>
-            <?php if ($hero_button_text) : ?>
-                <a href="<?php echo esc_url($hero_button_url); ?>" class="hero-button">
-                    <?php echo esc_html($hero_button_text); ?>
+            
+            <div class="hero-button-container">
+                <a href="/our-story/" class="hero-button">
+                    <?php esc_html_e('Our Story', 'cuevas'); ?>
                 </a>
-            <?php endif; ?>
+                
+                <?php if ($hero_button_text && $hero_button_url) : ?>
+                    <a href="<?php echo esc_url($hero_button_url); ?>" class="hero-button">
+                        <?php echo esc_html($hero_button_text); ?>
+                    </a>
+                <?php endif; ?>
+                
+                <a href="/contact/" class="hero-button">
+                     <?php esc_html_e('Contact Us', 'cuevas'); ?>
+                </a>
+            </div>
+
         </div>
     </div>
 </section><!-- #hero-section --> 

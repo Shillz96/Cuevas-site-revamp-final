@@ -198,4 +198,16 @@
     
     // Initialize when DOM is fully loaded
     document.addEventListener('DOMContentLoaded', init);
-})(); 
+})();
+
+// GSAP Animation for Product Gallery from product-page.md
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.querySelector('.woocommerce-product-gallery__image')) {
+    gsap.from('.woocommerce-product-gallery__image', {
+      opacity: 0,
+      scale: 0.9,
+      duration: 1,
+      ease: 'power2.out',
+    });
+  }
+}); 

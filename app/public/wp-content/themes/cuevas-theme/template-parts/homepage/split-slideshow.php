@@ -89,10 +89,13 @@ if (!empty($slides)) :
             <?php endforeach; ?>
         </div>
     </div>
+    <!-- Text section restored -->
+    
     <div class="slideshow-text">
         <?php foreach ($slides as $slide) : ?>
             <div class="item"><?php echo esc_html($slide['text']); ?></div>
         <?php endforeach; ?>
     </div>
+    
 </section><!-- #gallery-section -->
 <?php endif; ?> 

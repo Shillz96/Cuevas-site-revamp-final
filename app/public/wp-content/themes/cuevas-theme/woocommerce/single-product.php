@@ -2,69 +2,72 @@
 /**
  * The Template for displaying all single products
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/single-product.php.
- *
- * @see         https://docs.woocommerce.com/document/template-structure/
- * @package     WooCommerce\Templates
- * @version     1.6.4
+ * Override this template by copying it to yourtheme/woocommerce/single-product.php
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+defined('ABSPATH') || exit;
 
-get_header( 'shop' ); ?>
+get_header('shop');
 
-	<?php
-		/**
-		 * woocommerce_before_main_content hook.
-		 *
-		 * @hooked woocommerce_output_content_wrapper - 10 (outputs opening divs for the content)
-		 * @hooked woocommerce_breadcrumb - 20
-		 */
-		do_action( 'woocommerce_before_main_content' );
+/**
+ * Hook: woocommerce_before_main_content.
+ */
+do_action('woocommerce_before_main_content');
+
+while (have_posts()) :
+	the_post();
+	
+	global $product;
 	?>
+	<div class="single-product-wrapper">
+		<div class="product-gallery-section">
+			<?php
+			/**
+			 * Hook: woocommerce_before_single_product_summary.
+			 * 
+			 * @hooked woocommerce_show_product_sale_flash - 10
+			 * @hooked woocommerce_show_product_images - 20
+			 */
+			do_action('woocommerce_before_single_product_summary');
+			?>
+		</div>
 
-	<div class="product-hero-section">
-		<div class="container">
-			<nav class="woocommerce-breadcrumb">
-				<?php woocommerce_breadcrumb(); ?>
-			</nav>
+		<div class="product-details-section">
+			<?php
+			/**
+			 * Hook: woocommerce_single_product_summary.
+			 * 
+			 * @hooked woocommerce_template_single_title - 5
+			 * @hooked woocommerce_template_single_rating - 10
+			 * @hooked woocommerce_template_single_price - 10
+			 * @hooked woocommerce_template_single_excerpt - 20
+			 * @hooked woocommerce_template_single_add_to_cart - 30
+			 * @hooked woocommerce_template_single_meta - 40
+			 * @hooked woocommerce_template_single_sharing - 50
+			 */
+			do_action('woocommerce_single_product_summary');
+			?>
 		</div>
 	</div>
 
-	<div class="container">
-		<?php while ( have_posts() ) : ?>
-			<?php the_post(); ?>
-
-			<?php wc_get_template_part( 'content', 'single-product' ); ?>
-
-		<?php endwhile; // end of the loop. ?>
-	</div>
-
 	<?php
-		/**
-		 * woocommerce_after_main_content hook.
-		 *
-		 * @hooked woocommerce_output_content_wrapper_end - 10 (outputs closing divs for the content)
-		 */
-		do_action( 'woocommerce_after_main_content' );
-	?>
+	/**
+	 * Hook: woocommerce_after_single_product_summary.
+	 * 
+	 * @hooked woocommerce_output_product_data_tabs - 10
+	 * @hooked woocommerce_upsell_display - 15
+	 * @hooked woocommerce_output_related_products - 20
+	 */
+	do_action('woocommerce_after_single_product_summary');
 
-	<?php
-		/**
-		 * woocommerce_sidebar hook.
-		 *
-		 * @hooked woocommerce_get_sidebar - 10
-		 */
-		//do_action( 'woocommerce_sidebar' );
-		// Sidebar is removed for cleaner product page layout
-	?>
+endwhile; // end of the loop.
 
-<?php
-// Load product page animations
-wp_enqueue_script('cuevas-product-page');
+/**
+ * Hook: woocommerce_after_main_content.
+ */
+do_action('woocommerce_after_main_content');
 
-get_footer( 'shop' );
+get_footer('shop');
+?>
 
 /* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */ 

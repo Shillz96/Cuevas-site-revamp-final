@@ -8,17 +8,57 @@ A modern, responsive WordPress theme for Cuevas Western Wear e-commerce store. D
 theme/
 ├── assets/
 │   ├── css/
-│   │   ├── main.css              # Main stylesheet (imports component CSS)
+│   │   ├── main.css              # Main stylesheet
+│   │   ├── homepage.css          # Homepage specific styles
+│   │   ├── split-slideshow.css   # Hero slideshow styles
 │   │   ├── product-card.css      # Product card component styles
+│   │   ├── product-grid.css      # Product grid layout styles
+│   │   ├── product-page.css      # Product page layout styles
 │   │   ├── sidebar.css           # Sidebar and filter styles
-│   │   └── product-page.css      # Product page layout styles
+│   │   ├── shop-categories.css   # Shop categories display
+│   │   └── [other component css] # Various component styles
 │   ├── js/
-│   │   └── product-page.js       # Product page interactions
-│   └── images/                   # Theme images
-├── includes/
-│   └── components/
-│       └── product-card.html     # Product card component template
-└── product-page.html            # Example product page
+│   │   ├── animations.js         # Main animation scripts
+│   │   ├── navigation.js         # Navigation functionality
+│   │   ├── split-slideshow.js    # Homepage slideshow
+│   │   ├── about-animations.js   # About page animations
+│   │   ├── product-page.js       # Product page interactions
+│   │   └── customizer.js         # Theme customizer
+│   ├── images/                   # Theme images
+│   └── img/                      # Additional image assets
+├── inc/
+│   ├── components/               # Component template parts
+│   ├── widgets/                  # Custom widget code
+│   ├── customizer.php            # Theme customization options
+│   ├── template-tags.php         # Template helper functions
+│   ├── woocommerce.php           # WooCommerce integration
+│   └── enqueue.php               # Script/style registration
+├── template-parts/               # Reusable template parts
+│   ├── content.php               # Default content template
+│   ├── content-none.php          # No content found template
+│   ├── product-card.php          # Product card component
+│   └── homepage/                 # Homepage section templates
+│       ├── hero-section.php      # Hero section
+│       ├── split-slideshow.php   # Slideshow component
+│       ├── featured-products.php # Featured products section
+│       ├── products-grid.php     # Products grid layout
+│       └── shop-categories.php   # Shop categories section
+├── woocommerce/                  # WooCommerce template overrides
+├── .cursor/                      # Editor configuration
+├── functions.php                 # Theme functions
+├── style.css                     # Theme metadata
+├── index.php                     # Main template file
+├── header.php                    # Site header
+├── footer.php                    # Site footer
+├── sidebar.php                   # Sidebar template
+├── front-page.php                # Homepage template
+├── page.php                      # Default page template
+├── page-about.php                # About page template
+├── page-shop.php                 # Shop page template  
+├── single.php                    # Single post template
+├── archive.php                   # Archive template
+├── search.php                    # Search results
+└── 404.php                       # 404 error page
 ```
 
 ## Theme Features
@@ -76,15 +116,20 @@ gsap.from(".product-card", {
 
 ### 1. Theme Setup
 
-1. Create a new WordPress theme folder in `wp-content/themes/cuevas-western`
+1. Create a new WordPress theme folder in `wp-content/themes/cuevas-theme`
 2. Add the required theme files:
-   - `style.css` (based on main.css)
-   - `functions.php`
-   - `index.php`
-   - `header.php`
-   - `footer.php`
-   - `sidebar.php`
-   - `screenshot.png`
+   - `style.css` (theme metadata)
+   - `functions.php` (theme setup and functionality)
+   - `index.php` (main template file)
+   - `header.php` (site header)
+   - `footer.php` (site footer)
+   - `sidebar.php` (sidebar template)
+   - `front-page.php` (homepage template)
+   - `page.php` (default page template)
+   - `single.php` (single post template) 
+   - `archive.php` (archive template)
+   - `search.php` (search results)
+   - `404.php` (404 error page)
 
 ### 2. WooCommerce Templates
 
@@ -96,24 +141,7 @@ Override the following WooCommerce templates:
    - `archive-product.php` (based on our product page)
    - `single-product.php`
 
-### 3. Enqueue Styles and Scripts
-
-In `functions.php`:
-
-```php
-function cuevas_enqueue_scripts() {
-    // Styles
-    wp_enqueue_style('cuevas-main', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0');
-    
-    // Scripts
-    wp_enqueue_script('gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true);
-    wp_enqueue_script('gsap-scrolltrigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array('gsap'), '3.12.5', true);
-    wp_enqueue_script('cuevas-product-page', get_template_directory_uri() . '/assets/js/product-page.js', array('jquery', 'gsap'), '1.0.0', true);
-}
-add_action('wp_enqueue_scripts', 'cuevas_enqueue_scripts');
-```
-
-### 4. Setup WooCommerce Support
+### 3. Setup WooCommerce Support
 
 In `functions.php`:
 
@@ -127,29 +155,40 @@ function cuevas_woocommerce_setup() {
 add_action('after_setup_theme', 'cuevas_woocommerce_setup');
 ```
 
-### 5. Create Product Card Template Part
+### 4. Enqueue Scripts/Styles
 
-Create `template-parts/product-card.php`:
+The theme enqueues scripts and styles as configured in `functions.php`:
 
 ```php
-<div class="product-card">
-  <div class="product-image-container">
-    <?php the_post_thumbnail('shop_catalog', ['class' => 'product-image']); ?>
-    <div class="quick-view-btn"><?php esc_html_e('Quick View', 'cuevas'); ?></div>
-    <?php if ( $product->is_on_sale() ) : ?>
-      <div class="product-badge badge-sale"><?php esc_html_e('Sale', 'cuevas'); ?></div>
-    <?php endif; ?>
-  </div>
-  
-  <div class="product-info">
-    <h3 class="product-title"><?php the_title(); ?></h3>
-    <?php if ( $product->get_short_description() ) : ?>
-      <p class="product-subtitle"><?php echo wp_trim_words( $product->get_short_description(), 10 ); ?></p>
-    <?php endif; ?>
-    <div class="product-price"><?php echo $product->get_price_html(); ?></div>
-    <button class="add-to-cart-btn"><?php esc_html_e('Add to Cart', 'cuevas'); ?></button>
-  </div>
-</div>
+function cuevas_scripts() {
+    // Main stylesheet
+    wp_enqueue_style('cuevas-style', get_stylesheet_uri(), array(), CUEVAS_VERSION);
+    wp_enqueue_style('cuevas-main', get_template_directory_uri() . '/assets/css/main.css', array(), CUEVAS_VERSION);
+    
+    // Google fonts
+    wp_enqueue_style('cuevas-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@400;700&display=swap', array(), null);
+    
+    // Slick Slider
+    wp_enqueue_style('slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css', array(), '1.8.1');
+    wp_enqueue_script('slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array('jquery'), '1.8.1', true);
+    
+    // GSAP for animations
+    wp_enqueue_script('gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true);
+    wp_enqueue_script('gsap-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array('gsap'), '3.12.5', true);
+    
+    // Main navigation functionality
+    wp_enqueue_script('cuevas-navigation', get_template_directory_uri() . '/assets/js/navigation.js', array(), CUEVAS_VERSION, true);
+    
+    // Conditional script loading for different templates
+    if (is_front_page()) {
+        wp_enqueue_script('cuevas-slideshow', get_template_directory_uri() . '/assets/js/split-slideshow.js', array('jquery', 'slick', 'gsap'), CUEVAS_VERSION, true);
+    }
+    
+    if (is_page_template('page-about.php')) {
+        wp_enqueue_script('cuevas-about', get_template_directory_uri() . '/assets/js/about-animations.js', array('gsap', 'gsap-scroll-trigger'), CUEVAS_VERSION, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'cuevas_scripts');
 ```
 
 ## Customization Options
@@ -163,7 +202,7 @@ The theme uses CSS variables for easy color customization. You can modify these 
   --primary: #8B4513;
   --primary-light: #A0522D;
   --primary-dark: #59331D;
-  --secondary: #3a3a3a;
+  --secondary:rgb(247, 239, 239);
   /* etc. */
 }
 ```

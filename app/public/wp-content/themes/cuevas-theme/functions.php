@@ -141,33 +141,34 @@ add_action( 'widgets_init', 'cuevas_widgets_init' );
  */
 function cuevas_scripts() {
 	// Main stylesheet
-	wp_enqueue_style( 'cuevas-style', get_stylesheet_uri(), array(), CUEVAS_VERSION );
+	// wp_enqueue_style( 'cuevas-style', get_stylesheet_uri(), array(), CUEVAS_VERSION ); // Keep main.css primary for now
 	wp_enqueue_style( 'cuevas-main', get_template_directory_uri() . '/assets/css/main.css', array(), CUEVAS_VERSION );
+	
+	// Uncomment necessary styles/scripts
 	
 	// Google fonts
 	wp_enqueue_style( 'cuevas-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@400;700&display=swap', array(), null );
 	
-	// Slick Slider
+	// Slick Slider (Needed for slideshow)
 	wp_enqueue_style( 'slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css', array(), '1.8.1' );
 	wp_enqueue_script( 'slick', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array('jquery'), '1.8.1', true );
 	
 	// GSAP for animations (Updated versions)
 	wp_enqueue_script( 'gsap', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', array(), '3.12.5', true );
 	wp_enqueue_script( 'gsap-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', array('gsap'), '3.12.5', true );
+	wp_enqueue_script( 'gsap-scrollto', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js', array('gsap'), '3.12.5', true );
 	
 	// Main navigation functionality
 	wp_enqueue_script( 'cuevas-navigation', get_template_directory_uri() . '/assets/js/navigation.js', array(), CUEVAS_VERSION, true );
 	
 	// Load custom site animations - depends on GSAP plugins
-	wp_enqueue_script( 'cuevas-animations', get_template_directory_uri() . '/assets/js/animations.js', array('gsap', 'gsap-scroll-trigger'), CUEVAS_VERSION, true );
+	wp_enqueue_script( 'cuevas-animations', get_template_directory_uri() . '/assets/js/animations.js', array('gsap', 'gsap-scroll-trigger', 'gsap-scrollto'), CUEVAS_VERSION, true );
 	
 	// Specific scripts for homepage
 	if ( is_front_page() ) {
 		// Homepage specific styles
 		wp_enqueue_style( 'cuevas-slideshow', get_template_directory_uri() . '/assets/css/split-slideshow.css', array(), CUEVAS_VERSION );
 		wp_enqueue_style( 'cuevas-homepage', get_template_directory_uri() . '/assets/css/homepage.css', array(), CUEVAS_VERSION );
-		wp_enqueue_style( 'cuevas-gallery', get_template_directory_uri() . '/assets/css/gallery.css', array(), CUEVAS_VERSION );
-		wp_enqueue_style( 'cuevas-featured-products', get_template_directory_uri() . '/assets/css/featured-products.css', array(), CUEVAS_VERSION );
 		wp_enqueue_style( 'cuevas-product-grid', get_template_directory_uri() . '/assets/css/product-grid.css', array(), CUEVAS_VERSION );
 		wp_enqueue_style( 'cuevas-shop-categories', get_template_directory_uri() . '/assets/css/shop-categories.css', array(), CUEVAS_VERSION );
 		
@@ -185,6 +186,7 @@ function cuevas_scripts() {
 		wp_enqueue_script( 'comment-reply' );
 		wp_enqueue_script( 'cuevas-product', get_template_directory_uri() . '/assets/js/product-page.js', array('jquery', 'slick'), CUEVAS_VERSION, true );
 	}
+	
 }
 add_action( 'wp_enqueue_scripts', 'cuevas_scripts' );
 
@@ -193,6 +195,7 @@ add_action( 'wp_enqueue_scripts', 'cuevas_scripts' );
  */
 require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/customizer.php';
+// require get_template_directory() . '/inc/enqueue.php'; // Removed - redundant enqueue logic
 
 // Check if WooCommerce is active
 if ( class_exists( 'WooCommerce' ) ) {
