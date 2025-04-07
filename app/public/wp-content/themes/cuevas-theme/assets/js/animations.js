@@ -581,7 +581,8 @@ function initializeEntranceAnimations() {
         if (heroSection) {
             const heroTitle = heroSection.querySelector('.hero-title');
             const heroSubtitle = heroSection.querySelector('.hero-subtitle');
-            const heroButton = heroSection.querySelector('.hero-button');
+            // Select ALL hero buttons
+            const heroButtons = heroSection.querySelectorAll('.hero-button'); 
             
             // Create timeline for hero elements
             const tl = gsap.timeline({ delay: 0.5 });
@@ -604,19 +605,21 @@ function initializeEntranceAnimations() {
                 }, "-=0.6");
             }
             
-            if (heroButton) {
-                tl.fromTo(heroButton,
+            // Apply animation to ALL buttons with stagger
+            if (heroButtons.length > 0) { 
+                tl.fromTo(heroButtons, // Target the collection
                     { // From state
                         opacity: 0,
                         y: 20
                     },
                     { // To state
-                        opacity: 1, // Explicitly animate to opacity 1
-                        y: 0,       // Explicitly animate to y 0
+                        opacity: 1, 
+                        y: 0,       
                         duration: 0.8,
-                        ease: "power3.out"
+                        ease: "power3.out",
+                        stagger: 0.15 // Add stagger
                     },
-                    "-=0.4" // Keep the timing offset
+                    "-=0.4" 
                 );
             }
         }

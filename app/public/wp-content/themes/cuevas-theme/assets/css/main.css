@@ -5,6 +5,24 @@
  * For WordPress integration, this should be enqueued as the main stylesheet.
  */
 
+/* Import Component Stylesheets */
+@import url('product-card.css');
+@import url('sidebar.css');
+@import url('product-page.css');
+@import url('animations.css');
+@import url('product-badges.css');
+@import url('trust-badges.css');
+@import url('western-icons.css');
+@import url('brand-elements.css');
+@import url('team-section.css');
+@import url('page-hero.css');
+
+/* Import Widget Stylesheets */
+@import url('widgets/deal-timer.css');
+@import url('widgets/featured-product.css');
+@import url('widgets/western-style-guide.css');
+@import url('widgets/heritage-story-blocks.css');
+
 /* Base Styles and Variables */
 :root {
     /* Primary Colors */
@@ -210,24 +228,6 @@ button, input, select, textarea {
     background-color: var(--primary);
     color: var(--white);
 }
-
-/* Import Component Stylesheets */
-@import url('product-card.css');
-@import url('sidebar.css');
-@import url('product-page.css');
-@import url('animations.css');
-@import url('product-badges.css');
-@import url('trust-badges.css');
-@import url('western-icons.css');
-@import url('brand-elements.css');
-@import url('team-section.css');
-@import url('page-hero.css');
-
-/* Import Widget Stylesheets */
-@import url('widgets/deal-timer.css');
-@import url('widgets/featured-product.css');
-@import url('widgets/western-style-guide.css');
-@import url('widgets/heritage-story-blocks.css');
 
 /* Additional Components */
 /* Footer */
