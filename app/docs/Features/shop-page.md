@@ -1,7 +1,9 @@
 # Shop Page Template
 
 ## Overview
-The shop page displays WooCommerce products in a full-width grid layout, styled with the western theme aesthetic. It provides customers with a clean, organized view of available products with filtering and sorting options.
+- **Goal:** Display WooCommerce products in a clean, minimalist grid layout inspired by [Aether Apparel](https://aetherapparel.com/collections/mens-sweatshirts) (example category page).
+- **Focus:** Strong visual hierarchy, ample white space, clear typography, and intuitive navigation/filtering.
+- **Layout:** Full-width, responsive grid.
 
 ## Template Hierarchy
 This template follows the WordPress template hierarchy for WooCommerce:
@@ -22,10 +24,10 @@ For product categories:
 **Primary File**: `woocommerce/archive-product.php`
 
 ## Layout Components
-1. **Page Header**: Category title and optional description
-2. **Product Filters**: Sidebar with product filtering options
-3. **Product Grid**: Full-width responsive grid of products
-4. **Pagination**: Navigation between product pages
+1.  **Page Header:** Minimalist category title (and potentially breadcrumbs).
+2.  **Filtering/Sorting:** Prominent filter toggle button, potentially revealing filters in a sidebar or modal. Clear sorting options.
+3.  **Product Grid:** Clean grid (e.g., 2-4 columns depending on screen size) with significant spacing between items. Product cards should be minimal (image, title, price, maybe color swatches on hover).
+4.  **Pagination:** Simple, clear pagination controls.
 
 ## Core Functionality
 - Full-width product display
@@ -33,6 +35,7 @@ For product categories:
 - Sort products by various criteria
 - Display product images, titles, and prices
 - Quick view functionality (optional)
+- **Design:** Implement Aether-inspired minimalist aesthetic: clean lines, generous white space, refined typography (using Cinzel primarily), and subtle hover effects.
 
 ## Technical Requirements
 1. **Structure**:
@@ -53,6 +56,8 @@ For product categories:
    - Pagination for large product catalogs
    - Image optimization
    - Efficient product queries
+
+5. **Filtering:** Implement a user-friendly filtering mechanism (e.g., slide-out sidebar or modal activated by a button) for attributes, price, etc.
 
 ## Template Code Example
 ```php
@@ -136,7 +141,7 @@ To customize how individual products appear in the grid, create or modify `wooco
 ```php
 <?php
 /**
- * The template for displaying product content within loops
+ * The template for displaying product content within loops (Aether-inspired)
  */
 
 defined('ABSPATH') || exit;
@@ -148,85 +153,55 @@ if (empty($product) || !$product->is_visible()) {
   return;
 }
 ?>
-<li <?php wc_product_class('product-card', $product); ?>>
-  <div class="product-image">
-    <?php
-    /**
-     * Hook: woocommerce_before_shop_loop_item_title.
-     */
-    do_action('woocommerce_before_shop_loop_item_title');
-    ?>
-  </div>
-  
-  <div class="product-details">
-    <h2 class="woocommerce-loop-product__title"><?php echo esc_html($product->get_name()); ?></h2>
-    
-    <?php
-    /**
-     * Hook: woocommerce_after_shop_loop_item_title.
-     */
-    do_action('woocommerce_after_shop_loop_item_title');
-    
-    /**
-     * Hook: woocommerce_after_shop_loop_item.
-     */
-    do_action('woocommerce_after_shop_loop_item');
-    ?>
-  </div>
+<li <?php wc_product_class('product', $product); ?>>
+	<?php
+	/**
+	 * Hook: woocommerce_before_shop_loop_item.
+	 *
+	 * @hooked woocommerce_template_loop_product_link_open - 10
+	 */
+	do_action( 'woocommerce_before_shop_loop_item' );
+
+	/**
+	 * Hook: woocommerce_before_shop_loop_item_title.
+	 *
+	 * @hooked woocommerce_show_product_loop_sale_flash - 10
+	 * @hooked woocommerce_template_loop_product_thumbnail - 10
+	 */
+	do_action( 'woocommerce_before_shop_loop_item_title' );
+
+	/**
+	 * Hook: woocommerce_shop_loop_item_title.
+	 *
+	 * @hooked woocommerce_template_loop_product_title - 10
+	 */
+	do_action( 'woocommerce_shop_loop_item_title' );
+
+	/**
+	 * Hook: woocommerce_after_shop_loop_item_title.
+	 *
+	 * @hooked woocommerce_template_loop_rating - 5 
+	 * @hooked woocommerce_template_loop_price - 10
+	 */
+	do_action( 'woocommerce_after_shop_loop_item_title' );
+
+	/**
+	 * Hook: woocommerce_after_shop_loop_item.
+	 *
+	 * @hooked woocommerce_template_loop_product_link_close - 5
+	 * @hooked woocommerce_template_loop_add_to_cart - 10
+	 */
+	do_action( 'woocommerce_after_shop_loop_item' );
+	?>
 </li>
 ```
 
-## CSS Customization
-```css
-.woocommerce ul.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  width: 100%;
-  padding: 0;
-}
-
-.woocommerce ul.products li.product-card {
-  background-color: #F5F5DC;
-  border: 1px solid #8B4513;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.woocommerce ul.products li.product-card:hover {
-  transform: translateY(-5px);
-}
-
-.product-image img {
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid #8B4513;
-}
-
-.product-details {
-  padding: 15px;
-}
-
-.woocommerce-loop-product__title {
-  color: #3E2723;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
-
-.woocommerce ul.products li.product .price {
-  color: #A52A2A;
-  font-weight: bold;
-}
-
-.woocommerce ul.products li.product .button {
-  background-color: #A52A2A;
-  color: white;
-  border-radius: 3px;
-  font-weight: normal;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-```
+## CSS Customization Notes (Aether-Inspired)
+- **Layout:** Use CSS Grid for `.products` container. Adjust `grid-template-columns` and `gap` for responsiveness.
+- **Product Card (`.product`):** Minimal styling. No borders initially. Perhaps a subtle border/shadow on hover.
+- **Image:** Ensure high quality. Consider object-fit properties.
+- **Title/Price:** Use Cinzel font. Keep font sizes reasonable. Position below the image with clear spacing.
+- **Add to Cart/Hover:** Keep Add-to-Cart button minimal or reveal on hover for a cleaner look.
 
 ## Testing Checklist
 - [ ] Products display correctly in the grid layout
@@ -235,4 +210,7 @@ if (empty($product) || !$product->is_visible()) {
 - [ ] Product images load properly and are optimized
 - [ ] Layout is responsive and works on all device sizes
 - [ ] WooCommerce hooks are maintained for compatibility
-- [ ] Category pages follow the same design pattern 
+- [ ] Category pages follow the same design pattern
+- [ ] Design matches Aether-inspired aesthetic (minimalist, clean lines, typography).
+- [ ] Filtering mechanism is intuitive and matches design goals.
+- [ ] Hover states on product cards are subtle and informative. 

@@ -1,7 +1,9 @@
 # Product Page Template
 
 ## Overview
-The product page (single product view) displays detailed information about a specific WooCommerce product. It features a full-width layout with product images, details, purchasing options, and related products. A subtle GSAP animation enhances the product image on load.
+- **Goal:** Display detailed product information with a clean, modern layout inspired by [Aether Apparel's product page](https://aetherapparel.com/products/pacer-jacket-fern-green).
+- **Focus:** High-quality imagery, clear product options, structured technical details, and minimalist aesthetic.
+- **Layout:** Typically a two-column layout on wider screens (gallery left, details right), stacking vertically on smaller screens.
 
 ## Template Hierarchy
 This template follows the WordPress template hierarchy for WooCommerce single product pages:
@@ -19,13 +21,28 @@ For variations and specific tabs:
 
 ## Template File
 **Primary File**: `woocommerce/single-product.php`
+**Content File**: `woocommerce/content-single-product.php` (often used within `single-product.php`)
 
-## Layout Components
-1. **Product Gallery**: Product images with zoom functionality
-2. **Product Information**: Title, price, description, and attributes
-3. **Purchase Options**: Quantity selector and Add to Cart button 
-4. **Product Tabs**: Description, additional information, and reviews
-5. **Related Products**: Display of similar or related products
+## Layout Components (Aether-Inspired)
+1.  **Product Gallery (Left Column):**
+    *   Vertical thumbnails strip.
+    *   Large main image display area.
+    *   Zoom/lightbox functionality.
+2.  **Product Information (Right Column):**
+    *   Breadcrumbs (optional).
+    *   Product Title (clear, prominent).
+    *   Rating (subtle).
+    *   Price.
+    *   Color/Variant Swatches (if applicable).
+    *   Size Selector.
+    *   Add to Cart button (clear call to action).
+    *   Short description or key selling points.
+3.  **Below the Fold Sections:**
+    *   Detailed Description / Technical Features (potentially using icons).
+    *   Performance metrics (if applicable, like Aether's bars).
+    *   Additional Details (materials, care, origin).
+    *   Reviews (previously styled).
+    *   Related Products / Pairs Well With / You May Also Like.
 
 ## Core Functionality
 - Full-width product display
@@ -34,28 +51,23 @@ For variations and specific tabs:
 - Add to cart functionality
 - Product tabs for organized information
 - GSAP animation for product image loading
+- **Design:** Implement Aether-inspired minimalist aesthetic: generous white space, clean lines, Cinzel font for headings, clear hierarchy, high-quality visuals.
+- **Gallery:** Vertical thumbnails, smooth transition to main image on thumbnail click/hover.
 
 ## Technical Requirements
-1. **Structure**:
-   - WooCommerce template override
-   - Full-width layout
-   - Organized product information sections
-
-2. **Animation**:
-   - Subtle GSAP animation for product gallery
-   - Hover effects for thumbnails and buttons
-   - Optional zoom effect on product images
-
-3. **WordPress/WooCommerce Integration**:
-   - Standard WooCommerce hooks for product display
-   - Gallery integration
-   - Variable product handling
-   - Add to cart process
-
-4. **Performance Considerations**:
-   - Optimized image loading
-   - Efficient GSAP animations
-   - Proper handling of product variations
+1.  **Structure**:
+    *   Use `woocommerce/single-product.php` and potentially `woocommerce/content-single-product.php`.
+    *   Implement a CSS Grid or Flexbox layout for the main columns (gallery/details).
+    *   Structure content below the fold logically.
+2.  **Animation**:
+    *   Subtle fade-in/load animation for main image.
+    *   Smooth transitions for gallery interactions.
+    *   Optional subtle animations for sections scrolling into view below the fold.
+3.  **WordPress/WooCommerce Integration**:
+    *   Override `woocommerce/single-product/product-image.php` to implement the vertical thumbnail gallery.
+    *   Use standard hooks for product summary details (`woocommerce_single_product_summary`).
+    *   Ensure variable product selectors (color, size) are styled consistently.
+    *   Style tabs or accordion for description/details/reviews below the fold.
 
 ## Template Code Example
 ```php
@@ -132,87 +144,16 @@ get_footer('shop');
 ?>
 ```
 
-## CSS Customization
-```css
-.single-product-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  padding: 30px;
-  background-color: #F5F5DC;
-  color: #3E2723;
-}
-
-.product-gallery-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.product-details-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.woocommerce div.product div.images img {
-  border: 2px solid #8B4513;
-}
-
-.woocommerce div.product .product_title {
-  color: #3E2723;
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-}
-
-.woocommerce div.product p.price {
-  color: #A52A2A;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.woocommerce div.product form.cart .button {
-  background-color: #A52A2A;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: background-color 0.3s;
-}
-
-.woocommerce div.product form.cart .button:hover {
-  background-color: #D2691E;
-}
-
-.woocommerce div.product .woocommerce-tabs ul.tabs li {
-  background-color: #F5F5DC;
-  border-color: #8B4513;
-}
-
-.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
-  background-color: white;
-  border-bottom-color: white;
-}
-
-.woocommerce div.product .woocommerce-tabs .panel {
-  background-color: white;
-  padding: 20px;
-  border: 1px solid #8B4513;
-  border-top: none;
-}
-```
+## CSS Customization Notes (Aether-Inspired)
+- **Layout:** Use Grid/Flexbox for main two-column layout. Ensure proper stacking on mobile.
+- **Gallery:** Style vertical thumbnails, active states. Ensure main image container is adequately sized.
+- **Details Column:** Align text left. Use ample spacing between title, price, variants, button. Style size/color selectors cleanly (e.g., simple boxes or circles).
+- **Buttons:** Clean, clear button styles.
+- **Below Fold:** Use clear headings (Cinzel font), well-spaced content sections. Consider thin borders or background variations to separate sections.
+- **Typography:** Use Cinzel for headings, Raleway or a clean sans-serif for body text. Maintain consistent font sizes and weights.
 
 ## GSAP Animation
-```javascript
-// Add to scripts.js
-document.addEventListener('DOMContentLoaded', function() {
-  if (document.querySelector('.woocommerce-product-gallery__image')) {
-    gsap.from('.woocommerce-product-gallery__image', {
-      opacity: 0,
-      scale: 0.9,
-      duration: 1,
-      ease: 'power2.out',
-    });
-  }
-});
-```
+- Apply subtle `gsap.from()` to the main gallery image or the entire gallery container on load.
 
 ## Additional WooCommerce Customizations
 To customize specific elements of the product page, you can override additional templates:
@@ -234,4 +175,9 @@ Create `woocommerce/single-product/tabs/description.php`, `tabs/additional-infor
 - [ ] Add to cart functionality works properly
 - [ ] Product tabs display and function correctly
 - [ ] Related products are displayed appropriately
-- [ ] Layout is responsive across all device sizes 
+- [ ] Layout is responsive across all device sizes
+- [ ] Vertical thumbnail gallery works correctly (click/hover, active states)
+- [ ] Layout matches Aether-inspired two-column structure on desktop, stacks correctly on mobile
+- [ ] Color/Size selectors are styled clearly and function correctly
+- [ ] Below-the-fold sections (details, performance, etc.) are structured and styled correctly
+- [ ] Overall aesthetic is clean, minimalist, with good typography and spacing 

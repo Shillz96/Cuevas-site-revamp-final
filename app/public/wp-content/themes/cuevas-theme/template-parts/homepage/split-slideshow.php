@@ -74,7 +74,7 @@ if (empty($slides)) {
 // Only show if we have slides
 if (!empty($slides)) :
 ?>
-<section id="gallery-section" class="homepage-section split-slideshow">
+<section id="gallery-section" class="homepage-section split-slideshow" data-section-name="gallery">
     <div class="slideshow">
         <div class="slider">
             <?php foreach ($slides as $slide) : ?>

@@ -40,7 +40,7 @@ $products = new WP_Query($args);
 if ($products->have_posts()) :
 ?>
 
-<section id="product-grid-section" class="homepage-section product-grid-section">
+<section id="product-grid-section" class="homepage-section product-grid-section" data-section-name="featured-products">
     <div class="product-grid">
         <?php 
         while ($products->have_posts()) : $products->the_post();

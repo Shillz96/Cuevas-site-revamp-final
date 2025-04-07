@@ -98,7 +98,7 @@ html {
 }
 
 body {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Cinzel', serif;
     line-height: 1.6;
     color: var(--secondary);
     background-color: var(--white);
@@ -347,6 +347,7 @@ footer {
 /* Header Styles */
 .site-header,
 .compact-header {
+    /* Default solid background for non-homepage */
     background-color: var(--white);
     box-shadow: var(--shadow-sm);
     position: fixed;
@@ -356,8 +357,23 @@ footer {
     z-index: 1000;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, padding 0.3s ease;
     height: var(--header-height, 80px);
-    background-color: var(--white);
 }
+
+/* === Fix for Homepage Header Flash === */
+/* Initial state ONLY for homepage WHEN JS IS READY - Increased Specificity */
+body.js-ready.home #page .site-header,
+body.js-ready.page-template-front-page #page .site-header {
+    background-color: transparent !important; /* Added !important as a last resort */
+    box-shadow: none !important;
+}
+
+/* Apply solid background and shadow WHEN scrolled on homepage */
+body.js-ready.home #page .site-header.scrolled,
+body.js-ready.page-template-front-page #page .site-header.scrolled {
+    background-color: var(--white); /* Do NOT use !important here */
+    box-shadow: var(--shadow-sm);
+}
+/* === End Fix === */
 
 .compact-header {
     padding: var(--spacing-xs) 0;
@@ -537,11 +553,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-    .header-inner {
-        /* Keep space-between or adjust if branding needs centering */
-        /* Example: justify-content: space-between; */ 
-    }
-
     .site-branding {
         /* Allow branding to take up space, push nav to the end */
         flex-grow: 1;

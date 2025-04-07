@@ -64,7 +64,7 @@ $categories = [
 ?>
 
 <!-- DEBUG: Raw BG Image Setting: <?php echo esc_html(print_r($raw_bg_image_setting, true)); ?> -->
-<section id="shop-categories" class="homepage-section shop-categories-section">
+<section id="shop-categories" class="shop-categories-section homepage-section" data-section-name="shop-now">
     <div class="section-background" style="background-image: url('<?php echo esc_url($background_image); ?>');">
         <div class="overlay"></div>
     </div>

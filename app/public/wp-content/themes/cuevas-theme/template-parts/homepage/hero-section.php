@@ -14,7 +14,7 @@ $hero_button_text = get_theme_mod('cuevas_hero_button_text', 'Shop Now');
 $hero_button_url = get_theme_mod('cuevas_hero_button_url', '#shop-categories');
 ?>
 
-<section id="hero-section" class="homepage-section hero-section">
+<section id="hero-section" class="homepage-section hero-section" data-section-name="home" style="<?php echo $hero_image ? 'background-image: url(' . esc_url($hero_image) . ');' : ''; ?>">
     <div class="hero-image" style="background-image: url('<?php echo esc_url($hero_image); ?>');">
         <div class="hero-overlay"></div>
         <div class="hero-content">

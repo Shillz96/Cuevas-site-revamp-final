@@ -15,7 +15,7 @@ if ( ! defined( 'CUEVAS_VERSION' ) ) {
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  */
-function cuevas_setup() {
+function cuevas_theme_setup() {
 	/*
 	 * Make theme available for translation.
 	 */
@@ -74,15 +74,15 @@ function cuevas_setup() {
 	add_theme_support( 'customize-selective-refresh-widgets' );
 
 	/**
-	 * Add support for core custom logo.
+	 * Add support for core custom logo. Enable logo upload in Customizer.
 	 */
 	add_theme_support(
 		'custom-logo',
 		array(
-			'height'      => 250,
-			'width'       => 250,
-			'flex-width'  => true,
+			'height'      => 100, // Optional: Suggest height
+			'width'       => 300, // Optional: Suggest width
 			'flex-height' => true,
+			'flex-width'  => true,
 		)
 	);
 
@@ -92,7 +92,7 @@ function cuevas_setup() {
 	add_theme_support( 'wc-product-gallery-lightbox' );
 	add_theme_support( 'wc-product-gallery-slider' );
 }
-add_action( 'after_setup_theme', 'cuevas_setup' );
+add_action( 'after_setup_theme', 'cuevas_theme_setup' );
 
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
@@ -175,8 +175,15 @@ function cuevas_scripts() {
 		}
 	}
 
-	// Google fonts
-	wp_enqueue_style( 'cuevas-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@400;700&display=swap', array(), null );
+	// Google Fonts
+	// Remove Raleway if it was enqueued here
+	// Example: wp_dequeue_style( 'cuevas-raleway-font' ); 
+
+	// Enqueue Cinzel
+	wp_enqueue_style( 'cuevas-cinzel-font', 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap', array(), null );
+
+	// Enqueue main stylesheet
+	wp_enqueue_style( 'cuevas-style', get_stylesheet_directory_uri() . '/assets/css/main.css', array(), filemtime( get_template_directory() . '/assets/css/main.css' ) );
 
 	// Make sure jQuery is loaded (it's a dependency for Slick and others)
 	wp_enqueue_script('jquery');
@@ -317,3 +324,36 @@ if ( defined('WP_DEBUG') && WP_DEBUG ) {
     }
     add_action('wp_footer', 'cuevas_debug_template');
 }
+
+/**
+ * WooCommerce specific setup.
+ */
+function cuevas_woocommerce_setup() {
+    add_theme_support( 'woocommerce', array(
+        // Ensure standard image sizes are supported. Adjust sizes if needed.
+        'thumbnail_image_width' => 300, // Used in loops
+        'single_image_width'    => 600, // Used on single product page
+
+        // Optionally define custom aspect ratios if needed, e.g.:
+        // 'product_grid' => array(
+        //     'default_rows'    => 4,
+        //     'min_rows'        => 2,
+        //     'max_rows'        => 8,
+        //     'default_columns' => 4,
+        //     'min_columns'     => 2,
+        //     'max_columns'     => 5,
+        // ),
+    ) );
+    add_theme_support( 'wc-product-gallery-zoom' );
+    add_theme_support( 'wc-product-gallery-lightbox' );
+    add_theme_support( 'wc-product-gallery-slider' );
+}
+add_action( 'after_setup_theme', 'cuevas_woocommerce_setup' );
+
+/**
+ * Register Custom Image Sizes (if needed)
+ */
+// function cuevas_register_image_sizes() {
+//     // Example: add_image_size( 'custom_gallery_thumbnail', 150, 150, true );
+// }
+// add_action( 'init', 'cuevas_register_image_sizes' );

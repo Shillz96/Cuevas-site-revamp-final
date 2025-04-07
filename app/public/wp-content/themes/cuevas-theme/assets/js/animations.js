@@ -3,6 +3,18 @@
  * Handles scrolling behavior, entrance animations, and section transitions
  */
 
+// Add this class immediately
+document.body.classList.add('js-ready');
+console.log('js-ready class added to body');
+
+// GSAP Plugin Registration (if not already done)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+console.log('GSAP and plugins registered');
+
+// Global Animation Settings (Optional)
+// gsap.defaults({ease: "power2.inOut"});
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing animations and scrolling behavior');
     
@@ -486,7 +498,11 @@ function createSectionIndicators(sections) {
     sections.forEach(function(section, index) {
         const indicator = document.createElement('div');
         indicator.className = 'section-indicator our-dots-indicator';
-        indicator.setAttribute('title', `Section ${index + 1}`);
+        
+        let sectionTitle = section.dataset.sectionName || `Section ${index + 1}`;
+        sectionTitle = sectionTitle.charAt(0).toUpperCase() + sectionTitle.slice(1).replace('-', ' ');
+        indicator.setAttribute('title', sectionTitle);
+        
         indicator.setAttribute('data-section-index', index);
         indicator.addEventListener('click', function() {
             console.log(`Indicator ${index + 1} clicked`);

@@ -83,25 +83,35 @@ add_filter( 'body_class', 'cuevas_body_classes_transparent_header' );
             <div class="header-inner">
                 
                 <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="screen-reader-text"><?php esc_html_e( 'Menu', 'cuevas' ); ?></span>
                 </button>
 
                 <div class="site-branding">
                     <?php
-                    if (has_custom_logo()) :
+                    // Display the custom logo if available
+                    if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
                         the_custom_logo();
-                    else :
+                    } else {
+                        // Fallback to site title if no logo is set
+                        if ( is_front_page() && is_home() ) :
+                            ?>
+                            <h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+                            <?php
+                        else :
+                            ?>
+                            <p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
+                            <?php
+                        endif;
+                        $cuevas_description = get_bloginfo( 'description', 'display' );
+                        if ( $cuevas_description || is_customize_preview() ) :
+                            ?>
+                            <p class="site-description"><?php echo $cuevas_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+                        <?php endif;
+                    }
                     ?>
-                        <h1 class="site-title"><a href="<?php echo esc_url(home_url('/')); ?>" rel="home"><?php bloginfo('name'); ?></a></h1>
-                        <?php
-                        $cuevas_description = get_bloginfo('description', 'display');
-                        if ($cuevas_description || is_customize_preview()) :
-                        ?>
-                            <p class="site-description"><?php echo $cuevas_description; // phpcs:ignore ?></p>
-                        <?php endif; ?>
-                    <?php endif; ?>
                 </div><!-- .site-branding -->
 
                 <nav id="site-navigation" class="main-navigation">
