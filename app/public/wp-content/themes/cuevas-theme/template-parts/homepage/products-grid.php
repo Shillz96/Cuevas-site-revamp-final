@@ -10,13 +10,29 @@ if (!class_exists('WooCommerce')) {
     return;
 }
 
-// Get 8 products (2x4 grid)
+// Get featured products or fallback to recent products
 $args = array(
     'post_type'      => 'product',
-    'posts_per_page' => 8,
+    'posts_per_page' => 8, // Fetch exactly 8 products for a 2x4 grid
+    'status'         => 'publish',
     'orderby'        => 'date',
     'order'          => 'DESC',
 );
+
+// Try fetching featured products first
+if (function_exists('wc_get_featured_product_ids')) {
+    $featured_ids = wc_get_featured_product_ids();
+    if (!empty($featured_ids)) {
+        $args['post__in'] = array_slice($featured_ids, 0, 8); // Get up to 8 featured
+        unset($args['orderby']); // Order by post__in default
+    } else {
+        // If no featured, just get recent 8
+        $args['meta_query'] = array(); // Ensure meta query doesn't interfere if changed later
+    }
+} else {
+    // Fallback if wc function doesn't exist
+    $args['meta_query'] = array();
+}
 
 $products = new WP_Query($args);
 

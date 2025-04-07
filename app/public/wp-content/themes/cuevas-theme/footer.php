@@ -17,35 +17,46 @@
 		<div class="container">
 			<div class="footer-widgets">
 				<div class="footer-widget">
-					<h3>About Cuevas Western Wear</h3>
-					<p>Family-owned and operated since 1985, bringing quality western wear to our community for generations.</p>
+					<h3><?php esc_html_e( 'About Cuevas Western Wear', 'cuevas' ); ?></h3>
+					<p><?php echo wp_kses_post( get_theme_mod( 'cuevas_footer_about', 'Family-owned and operated since 1985, bringing quality western wear to our community for generations.' ) ); ?></p>
 				</div>
 				<div class="footer-widget">
-					<h3>Quick Links</h3>
+					<h3><?php esc_html_e( 'Quick Links', 'cuevas' ); ?></h3>
 					<?php
 					wp_nav_menu(
 						array(
 							'theme_location' => 'footer-menu',
 							'menu_id'        => 'footer-menu',
 							'depth'          => 1,
+							'fallback_cb'    => false, // Don't show anything if menu isn't set
 						)
 					);
 					?>
 				</div>
 				<div class="footer-widget">
-					<h3>Contact Us</h3>
-					<p>123 Western Avenue<br>
-					San Antonio, TX 12345<br>
-					Phone: (123) 456-7890<br>
-					Email: info@cuevaswestern.com</p>
+					<h3><?php esc_html_e( 'Contact Us', 'cuevas' ); ?></h3>
+					<p>
+						<?php echo nl2br( wp_kses_post( get_theme_mod( 'cuevas_footer_address', "123 Western Avenue\nSan Antonio, TX 12345" ) ) ); ?><br>
+						<?php esc_html_e( 'Phone:', 'cuevas' ); ?> <?php echo esc_html( get_theme_mod( 'cuevas_footer_phone', '(123) 456-7890' ) ); ?><br>
+						<?php esc_html_e( 'Email:', 'cuevas' ); ?> <a href="mailto:<?php echo esc_attr( get_theme_mod( 'cuevas_footer_email', 'info@cuevaswestern.com' ) ); ?>"><?php echo esc_html( get_theme_mod( 'cuevas_footer_email', 'info@cuevaswestern.com' ) ); ?></a>
+					</p>
 				</div>
 				<div class="footer-widget">
-					<h3>Follow Us</h3>
+					<h3><?php esc_html_e( 'Follow Us', 'cuevas' ); ?></h3>
 					<div class="social-icons">
-						<a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-						<a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-						<a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-						<a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+						<?php
+						$social_networks = array('facebook', 'instagram', 'twitter', 'pinterest');
+						foreach ($social_networks as $network) {
+							$url = get_theme_mod("cuevas_social_{$network}", '#');
+							if ( ! empty( $url ) && '#' !== $url ) {
+								printf( '<a href="%1$s" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-%2$s"></i><span class="screen-reader-text">%3$s</span></a>',
+									esc_url( $url ),
+									esc_attr( $network ),
+									sprintf( esc_html__( '%s Profile', 'cuevas' ), ucfirst( $network ) )
+								);
+							}
+						}
+						?>
 					</div>
 				</div>
 			</div>

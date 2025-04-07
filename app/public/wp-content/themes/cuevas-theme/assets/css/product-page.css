@@ -426,29 +426,333 @@
     }
 }
 
-/* Single Product Page Styles from product-page.md */
-.single-product-wrapper {
+/* Single Product Page Styles - Overhaul */
+
+/* Apply theme background? Add to body.single-product in main.css or woocommerce.css if needed */
+/* body.single-product { background-color: var(--background-color, #fdfaf6); } */
+
+/* Layout Wrapper - Centering and Padding */
+.product-layout {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;
-  padding: 30px;
-  background-color: #F5F5DC; /* Beige */
-  color: #3E2723; /* Dark Brown */
+    gap: 50px; /* Slightly larger gap */
+    max-width: 1200px; 
+    margin: 40px auto; /* Vertical margin + auto horizontal */
+    padding: 0 20px; /* Side padding */
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.product-gallery-section {
+/* Columns */
+.product-gallery-column,
+.product-details-column {
   flex: 1;
   min-width: 300px;
+    box-sizing: border-box;
+    border: none; /* Ensure no borders */
 }
 
-.product-details-section {
+/* Gallery Styling */
+.product-gallery-column .woocommerce-product-gallery {
+    border: 1px solid #e0d5c6; /* Subtle border matching theme */
+    padding: 10px;
+    background-color: #fff;
+}
+
+.product-gallery-column .woocommerce-product-gallery img {
+    border: none; /* Remove inner image border if previously added */
+    width: 100%;
+    height: auto;
+}
+
+/* Summary Column Styling */
+.product-details-column .summary {
+    padding: 10px; /* Add some padding inside summary */
+}
+
+/* Title */
+.product-details-column .summary .product_title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5em; /* Make title prominent */
+    color: #3E2723; /* Dark Brown */
+    margin-bottom: 0.3em; 
+    line-height: 1.2;
+}
+
+/* Category */
+.product-details-column .summary .product_meta span.posted_in {
+    display: block; 
+    margin-bottom: 1em; 
+    font-size: 0.9em;
+    color: #6c584c; /* Muted brown */
+}
+.product-details-column .summary .product_meta span.posted_in a {
+    color: inherit; 
+    text-decoration: underline;
+}
+.product-details-column .summary .product_meta span.posted_in a:hover {
+    color: #3E2723; 
+}
+
+/* Price */
+.product-details-column .summary p.price,
+.product-details-column .summary p.price span.amount {
+    font-size: 1.8em; /* Larger price */
+    font-weight: 600;
+    color: #A52A2A; /* Brown */
+    margin-bottom: 1em; 
+    display: block; 
+}
+
+/* Short Description */
+.product-details-column .summary .woocommerce-product-details__short-description {
+    margin-bottom: 1.5em; 
+    color: #5a5a5a;
+    line-height: 1.6;
+}
+
+/* Add to Cart Area */
+.product-details-column .summary form.cart {
+    margin-bottom: 1.5em; 
+    background-color: #fdfaf6; /* Light beige background */
+    padding: 20px;
+    border: 1px solid #e0d5c6;
+    border-radius: 4px;
+}
+
+.product-details-column .summary form.cart .variations td.label {
+    font-weight: 500;
+    color: #3E2723;
+}
+
+.product-details-column .summary form.cart .quantity {
+    margin-right: 10px;
+}
+
+.product-details-column .summary form.cart .button {
+    background-color: #8B4513; /* Saddle Brown */
+    color: #fff;
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.product-details-column .summary form.cart .button:hover {
+    background-color: #59331D; /* Darker brown */
+}
+
+/* Meta (SKU etc) */
+.product-details-column .summary .product_meta {
+    font-size: 0.9em; 
+    color: #6c584c; 
+    margin-bottom: 1.5em; 
+    border-top: 1px dashed #e0d5c6;
+    padding-top: 1.5em;
+}
+.product-details-column .summary .product_meta > span {
+    display: block; /* Ensure each meta item is on its own line */
+    margin-bottom: 0.5em;
+}
+.product-details-column .summary .product_meta .sku_wrapper {
+    font-weight: 500;
+}
+
+/* Custom Sections Styling */
+.product-details-column .summary .product-brand,
+.product-details-column .summary .product-features,
+.product-details-column .summary .shipping-info {
+    margin-bottom: 1.5em; 
+    padding: 15px;
+    border: 1px solid #e0d5c6;
+    border-radius: 4px;
+    background-color: #fdfaf6; 
+}
+
+.product-details-column .summary .product-features h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #3E2723;
+    margin-bottom: 0.8em;
+    font-family: 'Roboto', sans-serif;
+}
+
+.product-details-column .summary .product-features .features-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    font-size: 0.95em;
+    color: #5a5a5a;
+}
+
+.product-details-column .summary .product-features .features-list li {
+    margin-bottom: 0.5em;
+    display: flex;
+    align-items: center;
+}
+
+.product-details-column .summary .product-features .features-list li i {
+    margin-right: 8px;
+    color: #8B4513;
+}
+
+.product-details-column .summary .product-features .features-list li:last-child {
+    margin-bottom: 0;
+}
+
+.product-details-column .summary .shipping-info p {
+    margin-bottom: 0.5em;
+    font-size: 0.95em;
+    color: #5a5a5a;
+    display: flex;
+    align-items: center;
+}
+.product-details-column .summary .shipping-info p:last-child {
+    margin-bottom: 0;
+}
+.product-details-column .summary .shipping-info i {
+    margin-right: 8px;
+    color: #8B4513;
+    width: 16px; /* Give icon fixed width */
+    text-align: center;
+}
+
+/* WooCommerce Tabs */
+.woocommerce-tabs {
+    margin-top: 40px;
+    clear: both;
+}
+.woocommerce-tabs ul.tabs {
+    border-bottom: 2px solid #8B4513; /* Brown border */
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.woocommerce-tabs ul.tabs::before {
+    border-bottom: none; /* Remove WC default border */
+}
+.woocommerce-tabs ul.tabs li {
+    background-color: #fdfaf6; /* Light beige inactive tab */
+    border: 1px solid #e0d5c6 !important; /* Theme border */
+    border-bottom: none !important;
+    margin-right: 5px;
+    border-radius: 4px 4px 0 0;
+    padding: 0;
+}
+.woocommerce-tabs ul.tabs li a {
+    color: #6c584c; /* Muted brown text */
+    padding: 10px 20px;
+    font-weight: 500;
+}
+.woocommerce-tabs ul.tabs li.active {
+    background-color: #fff !important; /* White active tab */
+    border-color: #8B4513 !important;
+    border-bottom: 2px solid #fff !important; /* Hide bottom border part */
+    position: relative;
+    top: 1px; /* Overlap border */
+}
+.woocommerce-tabs ul.tabs li.active a {
+    color: #3E2723; /* Dark brown active text */
+    font-weight: 600;
+}
+.woocommerce-tabs .woocommerce-Tabs-panel {
+    background-color: #fff;
+    padding: 25px;
+    border: 1px solid #e0d5c6;
+    border-top: none;
+    margin: 0;
+}
+
+/* Reviews Section */
+#reviews #comments {
+    margin-top: 30px;
+}
+#reviews #reply-title {
+    font-family: 'Playfair Display', serif;
+    color: #3E2723;
+}
+#reviews .commentlist li img.avatar {
+    border-radius: 50%;
+    border: 2px solid #e0d5c6;
+}
+#reviews .comment-form-rating a {
+    color: #8B4513;
+}
+
+/* Related Products Title */
+.related.products > h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2em;
+    color: #3E2723;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Responsive adjustments for single product */
+@media (max-width: 768px) {
+    .product-layout {
+        gap: 30px;
+        margin: 20px auto;
+    }
+    .product-details-column .summary .product_title {
+        font-size: 2em;
+    }
+    .product-details-column .summary p.price {
+        font-size: 1.6em;
+    }
+}
+
+/* Remove redundant rules targeting default WC structure */
+/*
+.woocommerce div.product {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 40px; 
+}
+.woocommerce div.product div.images,
+.woocommerce div.product div.summary {
   flex: 1;
   min-width: 300px;
+    box-sizing: border-box;
+}
+*/
+
+/* Style product images - Add aspect ratio control */
+.woocommerce div.product div.images {
+  /* Optional: Add a max-width if needed */
+  /* max-width: 50%; */ 
 }
 
-/* Style product images */
+.woocommerce div.product div.images .woocommerce-product-gallery__wrapper {
+    margin: 0; /* Remove default margins if any */
+}
+
+.woocommerce div.product div.images .woocommerce-product-gallery__image:first-child {
+    margin-bottom: 1em; /* Space below main image if using thumbnails */
+}
+
 .woocommerce div.product div.images img {
   border: 2px solid #8B4513; /* Saddle Brown */
+  display: block; /* Ensure image is block level */
+  width: 100%; /* Make image responsive within container */
+  height: auto; /* Maintain aspect ratio */
+  /* aspect-ratio: 1 / 1; /* Enforce square aspect ratio - uncomment if desired */
+  /* object-fit: cover; /* Crop image to fit - uncomment if using aspect-ratio */
+}
+
+/* Adjust thumbnail styles if needed */
+.woocommerce div.product .thumbnails .slick-slide {
+    padding: 0 5px; /* Example spacing */
+}
+.woocommerce div.product .thumbnails img {
+    border: 1px solid #ccc; /* Lighter border for thumbnails */
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+.woocommerce div.product .thumbnails img:hover {
+    border-color: #8B4513;
 }
 
 /* Style product title */
@@ -497,3 +801,67 @@
 }
 
 /* End Single Product Page Styles */ 
+
+/* Related Products Grid Alignment Fix */
+.related.products > ul.products {
+    align-items: start !important; /* Override default 'stretch' */
+}
+
+/* Ensure list items within related products do not force height */
+.related.products > ul.products > li.product {
+    height: auto !important; /* Override any potential height settings */
+    align-self: start !important; /* Reinforce alignment */
+    margin-bottom: 20px; /* Add some space below each row */
+}
+
+/* Remove potentially conflicting nested rule */
+/*
+.related.products ul.products {
+    align-items: start !important; 
+    & > li.product {
+        height: auto !important; 
+        align-self: start !important; 
+    }
+}
+*/
+
+/* Remove the separate rule now combined above */
+
+/* --- Start Related Products Specific Styles --- */
+
+/* Ensure container has relative positioning for badges */
+.related.products ul.products li.product .product-image-container {
+    position: relative; /* Needed for absolute positioning of badge */
+    overflow: hidden; /* Keep this */
+}
+
+/* Ensure image is block and responsive */
+.related.products ul.products li.product .product-image-container img.product-image {
+    display: block !important; /* Force block */
+    width: 100% !important; /* Force width */
+    height: auto !important; /* Force auto height */
+}
+
+/* Force badge positioning */
+.related.products ul.products li.product .product-image-container .product-badge {
+    position: absolute !important;
+    top: 10px !important;
+    z-index: 2 !important;
+    /* Reset potentially inherited L/R */
+    left: auto;
+    right: auto;
+}
+
+/* Force specific badge positioning */
+.related.products ul.products li.product .product-image-container .badge-sale,
+.related.products ul.products li.product .product-image-container .onsale {
+    left: 10px !important;
+    background-color: #A52A2A !important; /* Ensure color */
+}
+
+.related.products ul.products li.product .product-image-container .badge-new {
+    right: 10px !important;
+    background-color: #2E8B57 !important; /* Ensure color */
+}
+
+/* --- End Related Products Specific Styles --- */ 

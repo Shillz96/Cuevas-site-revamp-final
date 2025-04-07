@@ -396,6 +396,76 @@ function cuevas_customize_register( $wp_customize ) {
 		'section'     => 'cuevas_navigation_section',
 		'type'        => 'checkbox',
 	) );
+
+	// Add Footer Settings Section
+	$wp_customize->add_section( 'cuevas_footer_section', array(
+		'title'       => __( 'Footer Settings', 'cuevas' ),
+		'description' => __( 'Customize the footer content and social links', 'cuevas' ),
+		'priority'    => 140, // After Homepage and Navigation
+	) );
+
+	// Footer About Text
+	$wp_customize->add_setting( 'cuevas_footer_about', array(
+		'default'           => 'Family-owned and operated since 1985, bringing quality western wear to our community for generations.',
+		'sanitize_callback' => 'wp_kses_post', // Allow basic HTML
+	) );
+
+	$wp_customize->add_control( 'cuevas_footer_about', array(
+		'label'       => __( 'Footer About Text', 'cuevas' ),
+		'section'     => 'cuevas_footer_section',
+		'type'        => 'textarea',
+	) );
+
+	// Footer Contact Address
+	$wp_customize->add_setting( 'cuevas_footer_address', array(
+		'default'           => "123 Western Avenue\nSan Antonio, TX 12345",
+		'sanitize_callback' => 'wp_kses_post', // Allow line breaks
+	) );
+
+	$wp_customize->add_control( 'cuevas_footer_address', array(
+		'label'       => __( 'Contact Address', 'cuevas' ),
+		'section'     => 'cuevas_footer_section',
+		'type'        => 'textarea',
+	) );
+
+	// Footer Contact Phone
+	$wp_customize->add_setting( 'cuevas_footer_phone', array(
+		'default'           => '(123) 456-7890',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+
+	$wp_customize->add_control( 'cuevas_footer_phone', array(
+		'label'       => __( 'Contact Phone', 'cuevas' ),
+		'section'     => 'cuevas_footer_section',
+		'type'        => 'text',
+	) );
+
+	// Footer Contact Email
+	$wp_customize->add_setting( 'cuevas_footer_email', array(
+		'default'           => 'info@cuevaswestern.com',
+		'sanitize_callback' => 'sanitize_email',
+	) );
+
+	$wp_customize->add_control( 'cuevas_footer_email', array(
+		'label'       => __( 'Contact Email', 'cuevas' ),
+		'section'     => 'cuevas_footer_section',
+		'type'        => 'email',
+	) );
+
+	// Social Links
+	$social_networks = array('facebook', 'instagram', 'twitter', 'pinterest');
+	foreach ($social_networks as $network) {
+		$wp_customize->add_setting( "cuevas_social_{$network}", array(
+			'default'           => '#',
+			'sanitize_callback' => 'esc_url_raw',
+		) );
+
+		$wp_customize->add_control( "cuevas_social_{$network}", array(
+			'label'       => sprintf(__( '%s URL', 'cuevas' ), ucfirst($network)),
+			'section'     => 'cuevas_footer_section',
+			'type'        => 'url',
+		) );
+	}
 }
 add_action( 'customize_register', 'cuevas_customize_register' );
 endif; /** End function_exists check */

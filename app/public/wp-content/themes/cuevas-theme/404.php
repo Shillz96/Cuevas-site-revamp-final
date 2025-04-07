@@ -21,7 +21,7 @@ get_header();
 					<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try searching for what you are looking for?', 'cuevas' ); ?></p>
 
 					<div class="error-image">
-						<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/404-cowboy-hat.svg' ); ?>" alt="404 Cowboy Hat">
+						<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/404-cowboy-hat.svg' ); ?>" alt="404 Cowboy Hat">
 					</div>
 
 					<?php get_search_form(); ?>

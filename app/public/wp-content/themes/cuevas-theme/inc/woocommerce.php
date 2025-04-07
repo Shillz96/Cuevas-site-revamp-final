@@ -40,15 +40,22 @@ add_filter( 'body_class', 'cuevas_woocommerce_body_classes' );
  * Related Products Args.
  */
 function cuevas_woocommerce_related_products_args( $args ) {
+	// Ensure $args is an array before processing
+	if ( ! is_array( $args ) ) {
+		$args = array(); // Initialize as empty array if not valid
+	}
+
 	$defaults = array(
-		'posts_per_page' => 3,
-		'columns'        => 3,
+		'posts_per_page' => 8, // Show 8 products (for a 2x4 grid)
+		'columns'        => 4, // Display in 4 columns
 	);
 
-	$args = wp_parse_args( $defaults, $args );
+	// Merge defaults with incoming args
+	$args = wp_parse_args( $args, $defaults );
 
 	return $args;
 }
+// Re-enable the filter now that the function is safer
 add_filter( 'woocommerce_output_related_products_args', 'cuevas_woocommerce_related_products_args' );
 
 /**
@@ -160,6 +167,7 @@ add_action( 'woocommerce_checkout_update_order_meta', 'cuevas_woocommerce_checko
 // 1. Remove default actions
 remove_action('woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10);
 remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10);
+// Ensure the default thumbnail is removed BEFORE we add ours
 remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
 remove_action('woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10); // Already removed above, double check just in case
 remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 5);
@@ -175,34 +183,38 @@ function cuevas_product_card_open() {
     echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">'; // Re-add link opening
     echo '<div class="product-image-container">'; // Open image container
     
-    // Add badges (Sale/New) - using classes from product-card.css
+    // Add badges (Sale/New) - using classes from product-card.css or default WC classes
     if ($product->is_on_sale()) {
-        echo '<span class="product-badge badge-sale">' . esc_html__( 'Sale!', 'woocommerce' ) . '</span>';
+        // Use the default WooCommerce sale flash hook if preferred, or output manually
+        // woocommerce_show_product_loop_sale_flash(); 
+        echo '<span class="onsale product-badge badge-sale">' . esc_html__( 'Sale!', 'woocommerce' ) . '</span>';
     }
-    // Example for a 'new' badge (requires custom logic/meta field to determine if product is new)
-    // if ( get_post_meta( $product->get_id(), '_is_new', true ) === 'yes' ) { 
-    //     echo '<span class="product-badge badge-new">' . esc_html__( 'New', 'cuevas' ) . '</span>';
-    // }
+    // Add new badge for products less than 30 days old
+    $post_date = get_the_time('U', $product->get_id());
+    $time_diff = time() - $post_date;
+    if ($time_diff < (30 * DAY_IN_SECONDS)) { // Check if less than 30 days old
+        echo '<span class="new-badge product-badge badge-new">' . esc_html__( 'New', 'cuevas' ) . '</span>';
+    }
 }
 add_action('woocommerce_before_shop_loop_item', 'cuevas_product_card_open', 5);
 
-// 3. Add product image
+// 3. Add product image - Run slightly later to ensure default is removed
 function cuevas_product_card_image() {
     global $product;
     // Use the class from product-card.css
     echo woocommerce_get_product_thumbnail('woocommerce_thumbnail', array( 'class' => 'product-image' )); 
 }
-add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_image', 10);
+add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_image', 11); // Changed priority to 11
 
-// 4. Close image container, open info container, add title
+// 4. Close image container, open info container, add title - Run after image
 function cuevas_product_card_info_open() {
     echo '</div>'; // Close product-image-container
     echo '<div class="product-info">'; // Open product-info
     // Use the class from product-card.css
     echo '<h2 class="product-title">' . get_the_title() . '</h2>'; 
 }
-// Hook after the image (priority 10), before price/rating (default 5, 10)
-add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_info_open', 20);
+// Hook after the image (priority 11), before price/rating (default 5, 10)
+add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_info_open', 20); // Keep priority 20
 
 // 5. Add Price and Add to Cart Button
 function cuevas_product_card_price_button() {

@@ -45,78 +45,31 @@ get_header();
         <div class="container">
             <div class="trust-badges">
                 <?php
-                $trust_badges = array(
-                    array(
-                        'icon' => 'fas fa-medal',
-                        'title' => 'Quality Guaranteed',
-                        'description' => 'All products backed by our satisfaction guarantee'
-                    ),
-                    array(
-                        'icon' => 'fas fa-truck',
-                        'title' => 'Free Shipping',
-                        'description' => 'On all orders over $100 within the United States'
-                    ),
-                    array(
-                        'icon' => 'fas fa-check-circle',
-                        'title' => 'Authenticity',
-                        'description' => 'Genuine western craftsmanship in every item'
-                    ),
-                    array(
-                        'icon' => 'fas fa-headset',
-                        'title' => 'Expert Support',
-                        'description' => 'Our team is here to help you find the perfect fit'
-                    )
-                );
+                // Define a maximum number of badges to check for
+                $max_badges = 6;
 
-                foreach ($trust_badges as $badge) : ?>
-                    <div class="trust-badge">
-                        <i class="<?php echo esc_attr($badge['icon']); ?> trust-icon"></i>
-                        <h4 class="trust-title"><?php echo esc_html($badge['title']); ?></h4>
-                        <p><?php echo esc_html($badge['description']); ?></p>
-                    </div>
-                <?php endforeach; ?>
+                for ( $i = 1; $i <= $max_badges; $i++ ) {
+                    // Get custom field values for the current badge number
+                    $icon_class = get_post_meta( get_the_ID(), 'trust_badge_' . $i . '_icon', true );
+                    $title      = get_post_meta( get_the_ID(), 'trust_badge_' . $i . '_title', true );
+                    $desc       = get_post_meta( get_the_ID(), 'trust_badge_' . $i . '_description', true );
+
+                    // Only display the badge if all three fields have values
+                    if ( ! empty( $icon_class ) && ! empty( $title ) && ! empty( $desc ) ) {
+                        ?>
+                        <div class="trust-badge">
+                            <i class="<?php echo esc_attr( $icon_class ); ?> trust-icon"></i>
+                            <h4 class="trust-title"><?php echo esc_html( $title ); ?></h4>
+                            <p><?php echo esc_html( $desc ); ?></p>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
             </div>
         </div>
     </section>
 </main>
 
 <?php
-// Enqueue GSAP animations for this page
-add_action('wp_footer', function() {
-    ?>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Timeline animation
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Value cards animation
-        gsap.from('.value-card', {
-            opacity: 0,
-            y: 40,
-            stagger: 0.2,
-            duration: 0.8,
-            scrollTrigger: {
-                trigger: '.brand-values',
-                start: 'top 70%',
-                toggleActions: 'play none none none'
-            }
-        });
-
-        // Craftsmanship items animation
-        gsap.from('.craft-item', {
-            opacity: 0,
-            scale: 0.9,
-            stagger: 0.2,
-            duration: 0.8,
-            scrollTrigger: {
-                trigger: '.craftsmanship-showcase',
-                start: 'top 70%',
-                toggleActions: 'play none none none'
-            }
-        });
-    });
-    </script>
-    <?php
-}, 20);
-
 get_footer(); 

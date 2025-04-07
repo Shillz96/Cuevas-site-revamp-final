@@ -879,3 +879,66 @@ function initializeSmoothScroll() {
         console.error('Error in smooth scroll:', error);
     }
 }
+
+/**
+ * Safely create a MutationObserver instance
+ * @param {Node|string} target - The DOM Node or selector string for the target element
+ * @param {object} config - MutationObserver options (defaults: { childList: true, subtree: true })
+ * @param {function} callback - The callback function for the observer
+ * @returns {MutationObserver|null} - The observer instance or null if creation failed
+ */
+function createSafeObserver(target, config, callback) {
+    if (!target || !callback || typeof MutationObserver === 'undefined') {
+        console.warn('MutationObserver not supported or missing target/callback.');
+        return null;
+    }
+
+    try {
+        let element = target;
+        // If target is a selector string, query for the element
+        if (typeof target === 'string') {
+            element = document.querySelector(target);
+            if (!element) {
+                console.warn(`Target element "${target}" not found for MutationObserver`);
+                return null;
+            }
+        }
+
+        // Ensure target is a valid DOM Node
+        if (!(element instanceof Node)) {
+            console.warn('MutationObserver target must be a valid DOM Node');
+            return null;
+        }
+
+        const observer = new MutationObserver(callback);
+        observer.observe(element, config || { childList: true, subtree: true });
+        console.log('Safe MutationObserver created for:', element);
+        return observer;
+    } catch (error) {
+        console.error('Error creating MutationObserver:', error);
+        return null;
+    }
+}
+
+// Make createSafeObserver globally available (if needed by other scripts, though ideally not)
+// Consider scoping this better if possible or removing global exposure.
+window.createSafeObserver = createSafeObserver;
+
+// Example of initializing ScrollTrigger (if it wasn't already handled by initializePlugins)
+// Ensure this runs after GSAP and ScrollTrigger are loaded.
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        if (!ScrollTrigger.isRegistered) { // Check if it's already registered
+            try {
+                gsap.registerPlugin(ScrollTrigger);
+                console.log('ScrollTrigger registered via fallback check in animations.js');
+            } catch (error) {
+                console.error('Error registering ScrollTrigger plugin:', error);
+            }
+        } else {
+            console.log('ScrollTrigger already registered.');
+        }
+    } else {
+        console.warn('GSAP or ScrollTrigger not available for registration check.');
+    }
+});
