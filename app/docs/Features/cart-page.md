@@ -1,7 +1,9 @@
 # Cart Page Template
 
 ## Overview
-The cart page is a full-width, responsive layout that displays the customer's selected products, quantities, and pricing. It allows for cart modifications and provides a pathway to checkout, all styled consistently with the western theme.
+- **Goal:** Display the cart contents clearly with a minimalist design consistent with the Aether-inspired aesthetic.
+- **Focus:** Simplicity, ease of use for quantity updates/removals, clear totals, and a prominent checkout button.
+- **Layout:** Full-width, responsive table or list layout.
 
 ## Template Hierarchy
 This template follows the WordPress template hierarchy for WooCommerce cart page:
@@ -20,11 +22,19 @@ For additional cart components:
 ## Template File
 **Primary File**: `woocommerce/cart/cart.php`
 
-## Layout Components
-1. **Cart Table**: Product images, names, prices, quantities, and subtotals
-2. **Cart Totals**: Subtotal, shipping, taxes, and total
-3. **Cross-Sells**: Suggested products based on cart contents
-4. **Update/Checkout Buttons**: Action buttons for cart management
+## Layout Components (Aether-Inspired)
+1.  **Cart Items:**
+    *   Clean table or list format.
+    *   Product thumbnail, title (linked), price, quantity selector (simple +/- buttons or input), line item total.
+    *   Minimalist remove item button (e.g., 'X').
+2.  **Cart Actions:**
+    *   Update Cart button (if quantity adjustments don't auto-update via AJAX).
+    *   Coupon code input field (cleanly integrated).
+3.  **Cart Totals (Right Aligned or Below):**
+    *   Clear breakdown: Subtotal, Shipping (with calculator link if applicable), Tax, Total.
+    *   Prominent Proceed to Checkout button.
+4.  **Cross-Sells (Optional, Below Totals):**
+    *   Displayed in a clean grid, matching the shop page product card style.
 
 ## Core Functionality
 - Display cart contents in a structured table
@@ -33,6 +43,7 @@ For additional cart components:
 - Calculate and display totals
 - Provide path to checkout
 - Show cross-sell products
+- **Design:** Implement Aether-inspired minimalist aesthetic: ample white space, clean lines, clear typography (Cinzel for headings, clean sans-serif for details), intuitive controls.
 
 ## Technical Requirements
 1. **Structure**:
@@ -55,6 +66,8 @@ For additional cart components:
    - Optimize ajax cart updates
    - Minimize unnecessary HTTP requests
    - Proper handling of cart sessions
+
+5. **AJAX Updates (Optional but Recommended):** Implement AJAX updates for quantity changes and item removals for a smoother UX.
 
 ## Template Code Example
 ```php
@@ -224,133 +237,14 @@ do_action('woocommerce_before_cart'); ?>
 <?php do_action('woocommerce_after_cart'); ?>
 ```
 
-## CSS Customization
-```css
-.woocommerce-cart-wrapper {
-  width: 100%;
-  padding: 20px;
-  background-color: #F5F5DC;
-  color: #3E2723;
-}
-
-.woocommerce table.shop_table {
-  border: 1px solid #8B4513;
-  background-color: white;
-}
-
-.woocommerce table.shop_table th {
-  background-color: #8B4513;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.woocommerce-cart-form__cart-item td {
-  padding: 12px !important;
-  vertical-align: middle !important;
-}
-
-.woocommerce a.remove {
-  color: #A52A2A !important;
-}
-
-.woocommerce a.remove:hover {
-  background-color: #A52A2A !important;
-  color: white !important;
-}
-
-.product-thumbnail img {
-  width: 80px !important;
-  height: auto !important;
-  border: 1px solid #8B4513;
-}
-
-.product-name a {
-  color: #3E2723;
-  font-weight: bold;
-}
-
-.cart-actions {
-  padding: 20px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.coupon {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.coupon label {
-  margin-right: 10px;
-}
-
-.coupon input {
-  padding: 8px;
-  border: 1px solid #8B4513;
-}
-
-.button {
-  background-color: #A52A2A !important;
-  color: white !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: background-color 0.3s;
-}
-
-.button:hover {
-  background-color: #D2691E !important;
-}
-
-.cart-collaterals {
-  margin-top: 30px;
-}
-
-.cart_totals h2 {
-  color: #3E2723;
-  font-family: 'Playfair Display', serif;
-  border-bottom: 2px solid #8B4513;
-  padding-bottom: 10px;
-}
-
-.woocommerce .cart-collaterals .cart_totals, 
-.woocommerce-page .cart-collaterals .cart_totals {
-  width: 100%;
-  max-width: 500px;
-  float: right;
-}
-
-.wc-proceed-to-checkout .button {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 15px !important;
-  font-size: 1.1em !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .woocommerce table.shop_table_responsive tr td::before, 
-  .woocommerce-page table.shop_table_responsive tr td::before {
-    color: #8B4513;
-    font-weight: bold;
-  }
-  
-  .cart-actions {
-    flex-direction: column;
-  }
-  
-  .coupon {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-}
-```
+## CSS Customization Notes (Aether-Inspired)
+- **Layout:** Use `display: table` or modern CSS like Grid/Flexbox for the cart items layout. Ensure responsiveness.
+- **Borders/Lines:** Use subtle, thin lines to separate items or sections, or rely on whitespace.
+- **Thumbnails:** Ensure reasonable size and quality.
+- **Quantity Input:** Style as a simple input field or use clean +/- buttons.
+- **Buttons:** Use consistent, clean button styling for Update Cart, Apply Coupon, Proceed to Checkout.
+- **Totals Section:** Clear alignment (often right-aligned), distinct visual separation for the final total.
+- **Typography:** Consistent use of Cinzel/sans-serif fonts, appropriate sizes and weights.
 
 ## Testing Checklist
 - [ ] Cart table displays correctly with all products
@@ -361,4 +255,10 @@ do_action('woocommerce_before_cart'); ?>
 - [ ] Coupon system works if enabled
 - [ ] Cart totals calculate and display correctly
 - [ ] Proceed to checkout button works
-- [ ] Layout is responsive on all device sizes 
+- [ ] Layout is responsive on all device sizes
+- [ ] Design matches Aether-inspired aesthetic (minimalist, clean typography, spacing).
+- [ ] Quantity updates (manual or AJAX) work correctly.
+- [ ] Item removal works correctly.
+- [ ] Totals are calculated accurately.
+- [ ] Checkout button proceeds to the correct page.
+- [ ] Cross-sells (if active) display correctly using the shop grid style. 
