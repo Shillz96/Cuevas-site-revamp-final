@@ -8,13 +8,25 @@ A modern, responsive WordPress theme for Cuevas Western Wear e-commerce store. D
 theme/
 ├── assets/
 │   ├── css/
-│   │   ├── main.css              # Main stylesheet
+│   │   ├── main.css              # Main stylesheet (imports others)
 │   │   ├── homepage.css          # Homepage specific styles (conditional)
 │   │   ├── split-slideshow.css   # Hero slideshow styles (conditional)
 │   │   ├── product-card.css      # Product card component styles (global)
 │   │   ├── product-grid.css      # Product grid layout styles (global & specific)
 │   │   ├── product-page.css      # Single product page layout styles (conditional)
 │   │   ├── shop-categories.css   # Shop categories section styles (conditional)
+│   │   ├── brand-elements.css    # Brand specific styles
+│   │   ├── product-badges.css    # Product badge styles
+│   │   ├── sidebar.css           # Sidebar styles
+│   │   ├── team-section.css      # Team section styles (if applicable)
+│   │   ├── trust-badges.css      # Trust badge styles
+│   │   ├── western-icons.css     # Western icon styles
+│   │   ├── widgets/              # Styles for custom widgets
+│   │   │   ├── deal-timer.css
+│   │   │   ├── featured-product.css
+│   │   │   ├── heritage-story-blocks.css
+│   │   │   ├── instagram-feed.css # (Actual file if it exists, or remove if not)
+│   │   │   └── western-style-guide.css
 │   │   ├── animations.css        # Base animation styles (if exists)
 │   │   └── woocommerce.css       # WooCommerce specific overrides (if exists)
 │   ├── js/
@@ -24,7 +36,11 @@ theme/
 │   │   ├── about-animations.js   # About page animations script (conditional)
 │   │   ├── product-page.js       # Single Product page interactions script (conditional)
 │   │   └── customizer.js         # Theme customizer preview script
-│   └── images/                   # Theme images (e.g., 404 image, placeholders)
+│   ├── images/                   # Theme images (e.g., 404 image, placeholders)
+│   └── img/                      # Theme SVG images
+│       ├── rope-border.svg
+│       ├── western-corner.svg
+│       └── western-pattern.svg
 ├── inc/
 │   ├── customizer.php            # Theme customization options
 │   ├── template-tags.php         # Template helper functions
@@ -35,18 +51,20 @@ theme/
 │   ├── content-page.php          # Default content template for pages
 │   ├── content-search.php        # Content template for search results
 │   ├── content-single.php        # Content template for single posts
+│   ├── product-card.php          # Template part for product cards (if used)
 │   └── homepage/                 # Homepage section templates
 │       ├── hero-section.php      # Hero section
 │       ├── split-slideshow.php   # Slideshow component
 │       ├── products-grid.php     # Homepage products grid section
-│       └── shop-categories.php   # Shop categories section
+│       ├── shop-categories.php   # Shop categories section
+│       └── featured-products.php # Featured products section
 ├── woocommerce/                  # WooCommerce template overrides
 │   ├── archive-product.php       # Shop / Product Archive template
 │   ├── content-product.php       # Product display in loops (uses hooks)
 │   ├── content-single-product.php # Main content for single product page
 │   └── single-product.php        # Single product page template shell
 ├── functions.php                 # Theme functions, setup, script/style enqueueing
-├── style.css                     # Theme metadata
+├── style.css                     # Theme metadata (Required by WordPress)
 ├── index.php                     # Main fallback template file
 ├── header.php                    # Site header
 ├── footer.php                    # Site footer

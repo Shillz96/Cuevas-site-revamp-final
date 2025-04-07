@@ -302,4 +302,30 @@
     color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Keep or adjust shadow */
+}
+
+/* Assuming a structure like this exists */
+.shop-categories-section .category-item .btn-category {
+    /* Remove properties potentially adding icons */
+    background-image: none; /* Remove background icon if present */
+    padding-left: 1.5rem; /* Adjust padding if icon was on left */
+    padding-right: 1.5rem; /* Adjust padding if icon was on right */
+    text-align: center; /* Ensure text is centered */
+    /* Add other base button styles if removing btn-category broke them */
+    /* display: inline-block; */
+    /* color: var(--white); */
+    /* background-color: var(--primary); */
+    /* ... etc ... */
+}
+
+/* Remove pseudo-element icons if they exist */
+.shop-categories-section .category-item .btn-category::before,
+.shop-categories-section .category-item .btn-category::after {
+    content: none !important; /* Remove content */
+    display: none !important; /* Hide pseudo-elements */
+}
+
+/* Ensure text alignment on the base .btn class within this section if needed */
+.shop-categories-section .category-item .btn {
+    text-align: center;
 } 

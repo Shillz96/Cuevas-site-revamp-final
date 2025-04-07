@@ -78,7 +78,6 @@ $categories = [
         <div class="cta-buttons-container">
             <?php foreach ($categories as $category) : ?>
             <a href="<?php echo esc_url($category['link']); ?>" class="cta-button btn <?php echo esc_attr($category['icon']); ?>-button">
-                <span class="category-icon <?php echo esc_attr($category['icon']); ?>-icon"></span>
                 <span class="category-name"><?php echo esc_html($category['name']); ?></span>
             </a>
             <?php endforeach; ?>

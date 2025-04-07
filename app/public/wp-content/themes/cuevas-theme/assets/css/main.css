@@ -9,13 +9,11 @@
 @import url('product-card.css');
 @import url('sidebar.css');
 @import url('product-page.css');
-@import url('animations.css');
 @import url('product-badges.css');
 @import url('trust-badges.css');
 @import url('western-icons.css');
 @import url('brand-elements.css');
 @import url('team-section.css');
-@import url('page-hero.css');
 
 /* Import Widget Stylesheets */
 @import url('widgets/deal-timer.css');
@@ -358,6 +356,7 @@ footer {
     z-index: 1000;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, padding 0.3s ease;
     height: var(--header-height, 80px);
+    background-color: var(--white);
 }
 
 .compact-header {

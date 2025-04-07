@@ -162,79 +162,79 @@ add_action( 'woocommerce_checkout_update_order_meta', 'cuevas_woocommerce_checko
 // }
 // add_filter('post_class', 'cuevas_filter_product_classes', 20, 3);
 
-// --- Restructure Shop Loop Items to match product-card.css --- 
+// --- Restructure Shop Loop Items conditionally ---
 
-// 1. Remove default actions
-remove_action('woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10);
-remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10);
-// Ensure the default thumbnail is removed BEFORE we add ours
-remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
-remove_action('woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10); // Already removed above, double check just in case
-remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 5);
-remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10);
-remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5);
-remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10);
+// Only run on main WooCommerce archive queries (Shop, Category, Tag)
+if ( function_exists('is_woocommerce') && is_woocommerce() && ( is_shop() || is_product_category() || is_product_tag() ) && is_main_query() ) {
+	// 1. Remove default actions
+	remove_action('woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10);
+	remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10);
+	// Ensure the default thumbnail is removed BEFORE we add ours
+	remove_action('woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10);
+	remove_action('woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10); // Already removed above, double check just in case
+	remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_rating', 5);
+	remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10);
+	remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5);
+	remove_action('woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10);
 
-// 2. Add opening wrappers and link
-function cuevas_product_card_open() {
-    global $product;
-    $link = apply_filters( 'woocommerce_loop_product_link', get_the_permalink(), $product );
-    echo '<div class="product-card">'; // Open product-card
-    echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">'; // Re-add link opening
-    echo '<div class="product-image-container">'; // Open image container
-    
-    // Add badges (Sale/New) - using classes from product-card.css or default WC classes
-    if ($product->is_on_sale()) {
-        // Use the default WooCommerce sale flash hook if preferred, or output manually
-        // woocommerce_show_product_loop_sale_flash(); 
-        echo '<span class="onsale product-badge badge-sale">' . esc_html__( 'Sale!', 'woocommerce' ) . '</span>';
-    }
-    // Add new badge for products less than 30 days old
-    $post_date = get_the_time('U', $product->get_id());
-    $time_diff = time() - $post_date;
-    if ($time_diff < (30 * DAY_IN_SECONDS)) { // Check if less than 30 days old
-        echo '<span class="new-badge product-badge badge-new">' . esc_html__( 'New', 'cuevas' ) . '</span>';
-    }
-}
-add_action('woocommerce_before_shop_loop_item', 'cuevas_product_card_open', 5);
+	// 2. Add opening wrappers and link
+	function cuevas_product_card_open() {
+		global $product;
+		$link = apply_filters( 'woocommerce_loop_product_link', get_the_permalink(), $product );
+		echo '<div class="product-card">'; // Open product-card
+		echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">'; // Re-add link opening
+		echo '<div class="product-image-container">'; // Open image container
+		
+		// Add badges (Sale/New) - using classes from product-card.css or default WC classes
+		if ($product->is_on_sale()) {
+			// Use the default WooCommerce sale flash hook if preferred, or output manually
+			// woocommerce_show_product_loop_sale_flash(); 
+			echo '<span class="onsale product-badge badge-sale">' . esc_html__( 'Sale!', 'woocommerce' ) . '</span>';
+		}
+		// Add new badge for products less than 30 days old
+		$post_date = get_the_time('U', $product->get_id());
+		$time_diff = time() - $post_date;
+		if ($time_diff < (30 * DAY_IN_SECONDS)) { // Check if less than 30 days old
+			echo '<span class="new-badge product-badge badge-new">' . esc_html__( 'New', 'cuevas' ) . '</span>';
+		}
+	}
+	add_action('woocommerce_before_shop_loop_item', 'cuevas_product_card_open', 5);
 
-// 3. Add product image - Run slightly later to ensure default is removed
-function cuevas_product_card_image() {
-    global $product;
-    // Use the class from product-card.css
-    echo woocommerce_get_product_thumbnail('woocommerce_thumbnail', array( 'class' => 'product-image' )); 
-}
-add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_image', 11); // Changed priority to 11
+	// 3. Add product image - Run slightly later to ensure default is removed
+	// Temporarily comment out to test for warnings
+	add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_image', 11); // Changed priority to 11
 
-// 4. Close image container, open info container, add title - Run after image
-function cuevas_product_card_info_open() {
-    echo '</div>'; // Close product-image-container
-    echo '<div class="product-info">'; // Open product-info
-    // Use the class from product-card.css
-    echo '<h2 class="product-title">' . get_the_title() . '</h2>'; 
-}
-// Hook after the image (priority 11), before price/rating (default 5, 10)
-add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_info_open', 20); // Keep priority 20
+	// 4. Close image container, open info container, add title - Run after image
+	function cuevas_product_card_info_open() {
+		echo '</div>'; // Close product-image-container
+		echo '<div class="product-info">'; // Open product-info
+		// Use the class from product-card.css
+		echo '<h2 class="product-title">' . get_the_title() . '</h2>'; 
+	}
+	// Hook after the image (priority 11), before price/rating (default 5, 10)
+	add_action('woocommerce_before_shop_loop_item_title', 'cuevas_product_card_info_open', 20); // Keep priority 20
 
-// 5. Add Price and Add to Cart Button
-function cuevas_product_card_price_button() {
-    global $product;
-    // Price - use class from product-card.css
-    if ( $price_html = $product->get_price_html() ) {
-        echo '<span class="product-price">' . $price_html . '</span>';
-    }
-    // Add to Cart Button - use class from product-card.css
-    // We mimic the arguments of woocommerce_template_loop_add_to_cart
-    woocommerce_template_loop_add_to_cart( array('class' => 'button add-to-cart-btn') );
-}
-add_action('woocommerce_after_shop_loop_item_title', 'cuevas_product_card_price_button', 10);
+	// 5. Add Price and Add to Cart Button
+	function cuevas_product_card_price_button() {
+		global $product;
+		// Price - use class from product-card.css
+		if ( $price_html = $product->get_price_html() ) {
+			echo '<span class="product-price">' . $price_html . '</span>';
+		}
+		// Add to Cart Button - use class from product-card.css
+		// We mimic the arguments of woocommerce_template_loop_add_to_cart
+		woocommerce_template_loop_add_to_cart( array('class' => 'button add-to-cart-btn') );
+	}
+	// Temporarily comment out to test for warnings
+	// add_action('woocommerce_after_shop_loop_item_title', 'cuevas_product_card_price_button', 10);
 
-// 6. Close wrappers and link
-function cuevas_product_card_close() {
-    echo '</div>'; // Close product-info
-    echo '</a>'; // Close product link
-    echo '</div>'; // Close product-card
-}
-add_action('woocommerce_after_shop_loop_item', 'cuevas_product_card_close', 15);
+	// 6. Close wrappers and link
+	function cuevas_product_card_close() {
+		echo '</div>'; // Close product-info
+		echo '</a>'; // Close product link
+		echo '</div>'; // Close product-card
+	}
+	add_action('woocommerce_after_shop_loop_item', 'cuevas_product_card_close', 15);
+} // End conditional check for is_product()
 
 // --- End Restructure --- 
